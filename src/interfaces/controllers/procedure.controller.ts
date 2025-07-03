@@ -1,0 +1,74 @@
+// src/interfaces/controllers/procedure.controller.ts
+
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateProcedureUseCase } from 'src/application/use-cases/procedure/create-procedure.use-case';
+import {
+  CreateProcedureRequestDto,
+  CreateProcedureResponseDto,
+  UpdateProcedureRequestDto,
+} from '../dtos/procedure.dto';
+import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
+import { UpdateProcedureUseCase } from 'src/application/use-cases/procedure/update-procedure.use-case';
+import { DeleteProcedureUseCase } from 'src/application/use-cases/procedure/delete-procedure.use-case';
+
+@ApiTags('procedure')
+@Controller('procedure')
+export class ProcedureController {
+  constructor(
+    private readonly createProcedureUseCase: CreateProcedureUseCase,
+    private readonly updateProcedureUseCase: UpdateProcedureUseCase,
+    private readonly deleteProcedureUseCase: DeleteProcedureUseCase,
+  ) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Registrar un nuevo procedimiento' })
+  @ApiBody({ type: CreateProcedureRequestDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Procedimiento registrado exitosamente',
+    type: CreateProcedureResponseDto,
+  })
+  async create(@Body() request: CreateProcedureRequestDto) {
+    return this.createProcedureUseCase.execute(request);
+  }
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Actualizar un procedimiento' })
+  @ApiBody({ type: UpdateProcedureRequestDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Procedimiento actualizado exitosamente',
+    type: CreateProcedureResponseDto,
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() request: UpdateProcedureRequestDto,
+  ) {
+    return this.updateProcedureUseCase.execute({ ...request, id });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar un procedimiento' })
+  @ApiResponse({
+    status: 200,
+    description: 'Procedimiento eliminado exitosamente',
+  })
+  async delete(@Param('id') id: string) {
+    await this.deleteProcedureUseCase.execute(id);
+    return { message: 'Procedimiento eliminado exitosamente' };
+  }
+}

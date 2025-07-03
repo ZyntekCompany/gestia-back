@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+enum TypeEntity {
+  Instutucion
+  Alcaldias
+  Policias
+}
+
+model Area {
+  id                String      @id @default(uuid())
+  name              String
+  entityId          String
+  entity            Entity      @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  users             User[]
+  procedures        Procedure[]
+  lastAssignedIndex Int         @default(0) // ← para la rotación
+  Request           Request[]
+}
+
+// schema.prisma
+model Entity {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  phone       String?
+  imgUrl      String
+  type        TypeEntity
+  active      Boolean    @default(true)
+
+  procedures Procedure[]
+  users      User[]
+  requests   Request[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  Area       Area[]
+}
+
+model Procedure {
+  id              String    @id @default(uuid())
+  name            String
+  description     String?
+  maxResponseDays Int
+  entityId        String
+  entity          Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  requests        Request[]
+  area            Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  areaId          String?
+}
+
+model User {
+  id                   String              @id @default(uuid())
+  email                String              @unique
+  password             String
+  fullName             String
+  typePerson           String?
+  typeIdentification   String?
+  numberIdentification String?
+  phone                String?
+  gender               String?
+  country              String?
+  birthDate            DateTime?
+  address              String?
+  city                 String?
+  role                 UserRole            @default(CITIZEN)
+  entityId             String?
+  areaId               String?
+  active               Boolean             @default(true)
+  isEmailVerified      Boolean             @default(false)
+  entity               Entity?             @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  requests             Request[]           @relation("CitizenRequests")
+  assigned             Request[]           @relation("AssignedRequests")
+  RequestUpdate        RequestUpdate[]
+  area                 Area?               @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  RefreshToken         RefreshToken[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  EmailVerification    EmailVerification[]
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  role      UserRole @default(CITIZEN)
+  entityId  String?
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_resets")
+}
+
+enum UserRole {
+  CITIZEN
+  OFFICER
+  ADMIN
+  SUPER
+}
+
+model Request {
+  id            String          @id @default(uuid())
+  subject       String
+  content       Json
+  status        RequestStatus
+  procedureId   String
+  procedure     Procedure       @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+  citizenId     String
+  citizen       User            @relation("CitizenRequests", fields: [citizenId], references: [id], onDelete: Cascade)
+  assignedToId  String?
+  assignedTo    User?           @relation("AssignedRequests", fields: [assignedToId], references: [id], onDelete: Cascade)
+  entityId      String
+  entity        Entity          @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  currentAreaId String?
+  currentArea   Area?           @relation(fields: [currentAreaId], references: [id], onDelete: Cascade)
+  deadline      DateTime
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Document      Document[]
+  RequestUpdate RequestUpdate[]
+}
+
+enum RequestStatus {
+  ASSIGNED
+  IN_REVIEW
+  COMPLETED_ON_TIME
+  COMPLETED_LATE
+  PENDING
+  OVERDUE
+  CLOSED
+}
+
+model Document {
+  id              String         @id @default(uuid())
+  name            String
+  url             String
+  requestId       String
+  requestUpdateId String?
+  request         Request        @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestUpdate   RequestUpdate? @relation(fields: [requestUpdateId], references: [id], onDelete: Cascade) // <-- ESTO AGREGA LA RELACIÓN INVERSA
+  uploadedAt      DateTime       @default(now())
+}
+
+model RequestUpdate {
+  id          String     @id @default(uuid())
+  requestId   String
+  request     Request    @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  updatedById String
+  updatedBy   User       @relation(fields: [updatedById], references: [id], onDelete: Cascade)
+  type        UpdateType
+  message     String?
+  data        Json?
+  fromAreaId  String?
+  toAreaId    String?
+  isRead      Boolean    @default(false)
+  fromUserId  String?
+  toUserId    String?
+  createdAt   DateTime   @default(now())
+  Document    Document[]
+}
+
+enum UpdateType {
+  ASSIGNED
+  DERIVED
+  RESPONSE
+  USER_REPLY
+  SIGNED
+  CLOSED
+  COMMENT
+}
