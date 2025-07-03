@@ -1,4 +1,3 @@
-GNU nano 7.2                                             Dockerfile                                                      # Imagen base oficial de Node
 FROM node:24-alpine
 
 # Crear carpeta de trabajo
