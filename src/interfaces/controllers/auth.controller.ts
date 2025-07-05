@@ -97,7 +97,7 @@ export class AuthController {
     return this.registerUseCase.executeOfficer(request);
   }
 
-  @Post('iniciar-sesion')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginRequestDto })
