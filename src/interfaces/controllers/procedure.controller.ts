@@ -44,6 +44,7 @@ export class ProcedureController {
   async create(@Body() request: CreateProcedureRequestDto) {
     return this.createProcedureUseCase.execute(request);
   }
+
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar un procedimiento' })

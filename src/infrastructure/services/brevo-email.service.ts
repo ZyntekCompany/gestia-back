@@ -26,7 +26,7 @@ export class BrevoEmailService implements EmailService {
   constructor(private readonly configService: ConfigService) {
     this.apiKey = this.configService.get<string>('BREVO_API_KEY')!;
     this.senderName =
-      this.configService.get<string>('BREVO_SENDER_NAME') || 'Acadix';
+      this.configService.get<string>('BREVO_SENDER_NAME') || 'Gestia';
     this.senderEmail = this.configService.get<string>('BREVO_SENDER_EMAIL')!;
 
     if (!this.apiKey) {
@@ -38,7 +38,7 @@ export class BrevoEmailService implements EmailService {
   }
 
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    const resetUrl = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${token}`;
+    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -50,14 +50,14 @@ export class BrevoEmailService implements EmailService {
           email: email,
         },
       ],
-      subject: 'Restablece tu contraseña - Acadix',
+      subject: 'Restablece tu contraseña - Gestia',
       htmlContent: `
         <!DOCTYPE html>
         <html lang="es">
         <head>
             <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Restablecer Contraseña - Acadix</title>
+            <title>Restablecer Contraseña - Gestia</title>
           <style>
                 * {
                     margin: 0;
@@ -340,9 +340,9 @@ export class BrevoEmailService implements EmailService {
                         <div class="header-content">
                             <div class="logo-container">
                                 <img src="https://eduadminsoft-s3.s3.us-east-1.amazonaws.com/schools/descarga-removebg-preview.png" 
-                                     alt="Acadix Logo" 
+                                     alt="Gestia Logo" 
                                      class="logo">
-                                <h1 class="brand-name">Acadix</h1>
+                                <h1 class="brand-name">Gestia</h1>
                             </div>
                             <h2 class="header-title">Restablece tu Contraseña</h2>
                         </div>
@@ -352,7 +352,7 @@ export class BrevoEmailService implements EmailService {
                         <p class="greeting">¡Hola!</p>
                         
                         <p class="main-message">
-                            Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Acadix. 
+                            Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Gestia. 
                             Si fuiste tú quien realizó esta solicitud, haz clic en el botón de abajo para crear una nueva contraseña.
                         </p>
 
@@ -374,7 +374,7 @@ export class BrevoEmailService implements EmailService {
                                 Si tienes problemas con el botón, copia y pega el siguiente enlace en tu navegador:
                             </p>
                             <a href="${resetUrl}" class="url-box">${resetUrl}</a>
-            </div>
+                        </div>
 
                         <div class="support-section">
                             <p class="support-text">
@@ -388,29 +388,28 @@ export class BrevoEmailService implements EmailService {
                             </p>
 
                             <div class="signature">
-                                <p>Saludos cordiales,<br>
-                                <span class="signature-name">El equipo de Acadix</span></p>
+                                <p>Saludos cordiales,<br>El equipo de Gestia</p>
                             </div>
-              </div>
+                        </div>
                     </main>
 
                     <footer class="email-footer">
                         <p class="footer-text">
-                            Este correo fue enviado por Acadix. Por favor, no respondas a este mensaje.<br>
-                            © 2024 Acadix. Todos los derechos reservados.
+                            Este correo fue enviado por Gestia. Por favor, no respondas a este mensaje.<br>
+                            © 2024 Gestia. Todos los derechos reservados.
                         </p>
                     </footer>
+                </div>
             </div>
-          </div>
         </body>
         </html>
       `,
       textContent: `
-        Restablece tu Contraseña - Acadix
+        Restablece tu Contraseña - Gestia
         
         ¡Hola!
         
-        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Acadix.
+        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Gestia.
         
         Haz clic en este enlace para restablecer tu contraseña: ${resetUrl}
         
@@ -419,7 +418,7 @@ export class BrevoEmailService implements EmailService {
         Si no solicitaste este cambio, puedes ignorar este correo de forma segura.
         
         Saludos,
-        El equipo de Acadix
+        El equipo de Gestia
       `,
     };
 
@@ -431,7 +430,7 @@ export class BrevoEmailService implements EmailService {
     firstName: string,
     token: string,
   ): Promise<void> {
-    const verificationUrl = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${token}`;
+    const verificationUrl = `http://localhost:3000/verificacion-correo?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -443,14 +442,15 @@ export class BrevoEmailService implements EmailService {
           email: email,
         },
       ],
-      subject: 'Tu cuenta ha sido creada exitosamente en Acadix.',
+      subject:
+        '¡Bienvenido a Gestia! Por favor, verifica tu correo electrónico',
       htmlContent: `
      <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a Acadix</title>
+    <title>Bienvenido a Gestia</title>
     <style>
         * {
             margin: 0;
@@ -517,43 +517,6 @@ export class BrevoEmailService implements EmailService {
             color: #475569;
             margin-bottom: 32px;
             line-height: 1.7;
-        }
-
-        .important-section {
-            background-color: #f1f5f9;
-            border-left: 4px solid #6b7280;
-            padding: 24px;
-            margin-bottom: 32px;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .important-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-
-        .important-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .important-list li {
-            position: relative;
-            padding-left: 24px;
-            margin-bottom: 12px;
-            color: #475569;
-            font-size: 15px;
-        }
-
-        .important-list li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #6b7280;
-            font-weight: bold;
-            font-size: 18px;
         }
 
         .cta-button {
@@ -662,7 +625,7 @@ export class BrevoEmailService implements EmailService {
         <header class="header">
             <div class="logo-container">
                 <img src="https://eduadminsoft-s3.s3.us-east-1.amazonaws.com/schools/descarga-removebg-preview.png" 
-                     alt="Acadix Logo" 
+                     alt="Gestia Logo" 
                      class="logo">
                 <h1 class="brand-name">${this.senderName}</h1>
             </div>
@@ -672,19 +635,10 @@ export class BrevoEmailService implements EmailService {
             <h2 class="welcome-title">¡Bienvenido, ${firstName}!</h2>
             
             <p class="description">
-                Tu cuenta en Acadix ha sido creada. Para completar el proceso de registro, por favor establece tu contraseña a continuación:
+                Gracias por registrarte en Gestia. Para activar tu cuenta y comenzar a disfrutar de nuestros servicios, por favor verifica tu correo electrónico haciendo clic en el siguiente botón:
             </p>
 
-            <div class="important-section">
-                <h3 class="important-title">Información Importante:</h3>
-                <ul class="important-list">
-                    <li>Este enlace para establecer tu contraseña expirará en 24 horas.</li>
-                    <li>Asegúrate de elegir una contraseña segura y que puedas recordar.</li>
-                    <li>Una vez establecida, podrás iniciar sesión en tu cuenta de Acadix.</li>
-                </ul>
-            </div>
-
-            <a href="${verificationUrl}" class="cta-button">Establecer Contraseña</a>
+            <a href="${verificationUrl}" class="cta-button">Verificar correo electrónico</a>
 
             <div class="help-section">
                 <p class="help-text">
@@ -699,7 +653,7 @@ export class BrevoEmailService implements EmailService {
                 </div>
                 
                 <div class="signature">
-                    <p>Saludos cordiales,<br>El equipo de Acadix</p>
+                    <p>Saludos cordiales,<br>El equipo de Gestia</p>
                 </div>
             </div>
         </main>
@@ -712,18 +666,17 @@ export class BrevoEmailService implements EmailService {
 </html>
       `,
       textContent: `
-        ¡Bienvenido a Acadix!
+        ¡Bienvenido a Gestia!
         
         ¡Hola, ${firstName}!
         
-        Tu cuenta ha sido creada exitosamente en Acadix.
+        Gracias por registrarte en Gestia.
+        Para activar tu cuenta, haz clic en este enlace: ${verificationUrl}
         
-        Para completar tu registro, haz clic en este enlace: ${verificationUrl}
-        
-        Este enlace expirará en 24 horas por motivos de seguridad.
+        Si el botón no funciona, copia y pega el enlace en tu navegador.
         
         ¡Bienvenido a bordo!
-        El equipo de Acadix
+        El equipo de Gestia
       `,
     };
 

@@ -51,7 +51,6 @@ export class AuthController {
   constructor(
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
-
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
@@ -61,8 +60,6 @@ export class AuthController {
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly updateUserByAdminUseCase: UpdateUserByAdminUseCase,
     private readonly verifyEmailUseCase: VerifyEmailUseCase,
-    // private readonly allUserUseCase: AllUSerUseCase,
-    // private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
 
   private getCookieConfig(req: Request) {
@@ -100,7 +97,7 @@ export class AuthController {
     return this.registerUseCase.executeOfficer(request);
   }
 
-  @Post('login')
+  @Post('iniciar-sesion')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginRequestDto })
@@ -130,7 +127,7 @@ export class AuthController {
 
     // Configuración de cookies para accessToken
     res.cookie('accessToken', result.accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: cookieConfig.secure,
       sameSite: cookieConfig.sameSite,
       maxAge: 35 * 60 * 1000, // 35 minutos
