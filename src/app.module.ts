@@ -7,6 +7,7 @@ import { AuthModule } from './module/auth.module';
 import { AreaModule } from './module/area.module';
 import { ProcedureModule } from './module/procedure.module';
 import { RequestModule } from './module/request.module';
+import { UserModule } from './module/user.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RequestModule } from './module/request.module';
     AreaModule,
     ProcedureModule,
     RequestModule,
+    UserModule,
   ],
 
   controllers: [],

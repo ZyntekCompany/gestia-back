@@ -37,7 +37,10 @@ export class S3Service {
     }
 
     // Usar el nombre original tal cual
-    const originalFileName = file.originalname;
+    const originalFileName = file.originalname
+      .trim()
+      .replace(/\s+/g, '_') // Reemplaza espacios por guión bajo
+      .replace(/[^\w.-]/g, ''); // Elimina caracteres raros o inseguros
 
     let bufferToUpload: Buffer = file.buffer;
     let contentType = file.mimetype;
