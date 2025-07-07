@@ -211,7 +211,6 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  // src/infrastructure/repositories/auth/prisma-user.repository.ts
   async listUsersPaginated(params: {
     entityId?: string;
     page?: number;
@@ -249,16 +248,17 @@ export class PrismaUserRepository implements UserRepository {
         where,
         skip,
         take: limit,
-        include: { entity: true },
+        include: { entity: true, area: true },
         orderBy: { createdAt: 'desc' },
       }),
     ]);
+    const pageCount = Math.ceil(total / limit);
 
     if (forAdmin) {
       return {
         total,
         page,
-        limit,
+        pageCount,
         entities: [
           {
             id: entityId || '',
@@ -271,6 +271,9 @@ export class PrismaUserRepository implements UserRepository {
               role: user.role,
               isEmailVerified: user.isEmailVerified,
               active: user.active,
+              area: user.area
+                ? { id: user.area.id, name: user.area.name }
+                : undefined,
             })),
           },
         ],
@@ -296,13 +299,16 @@ export class PrismaUserRepository implements UserRepository {
         role: user.role,
         isEmailVerified: user.isEmailVerified,
         active: user.active,
+        area: user.area
+          ? { id: user.area.id, name: user.area.name }
+          : undefined,
       });
     }
 
     return {
       total,
       page,
-      limit,
+      pageCount,
       entities: Object.values(entitiesMap),
     };
   }

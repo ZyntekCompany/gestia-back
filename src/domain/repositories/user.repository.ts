@@ -30,5 +30,4 @@ export interface UserRepository {
     search?: string;
     forAdmin?: boolean;
   }): Promise<UserListPaginatedDto>;
-  // allUser(id: string): Promise<User[]>
 }

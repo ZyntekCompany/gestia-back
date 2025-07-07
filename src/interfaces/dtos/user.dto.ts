@@ -193,6 +193,11 @@ export class UpdateCitizenDto {
   city?: string;
 }
 
+export class AreaDto {
+  @ApiProperty() id: string;
+  @ApiProperty() name: string;
+}
+
 export class UserListItemDto {
   @ApiProperty() id: string;
   @ApiProperty() email: string;
@@ -200,19 +205,19 @@ export class UserListItemDto {
   @ApiProperty() role: string;
   @ApiProperty() isEmailVerified: boolean;
   @ApiProperty() active: boolean;
+  @ApiProperty({ type: AreaDto, required: false }) area?: AreaDto; // <---
 }
 
 export class EntityWithUsersDto {
   @ApiProperty() id: string;
   @ApiProperty() name: string;
   @ApiProperty() imgUrl: string;
-  // ... otros campos de Entity si necesitas
   @ApiProperty({ type: [UserListItemDto] }) users: UserListItemDto[];
 }
 
 export class UserListPaginatedDto {
   @ApiProperty() total: number;
   @ApiProperty() page: number;
-  @ApiProperty() limit: number;
+  @ApiProperty() pageCount: number; // <--- nuevo campo
   @ApiProperty({ type: [EntityWithUsersDto] }) entities: EntityWithUsersDto[];
 }

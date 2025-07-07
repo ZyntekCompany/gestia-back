@@ -103,6 +103,7 @@ export class PrismaEntityRepository implements EntityRepository {
       skip,
       take,
       orderBy: { name: 'asc' },
+      include: { Area: true },
     });
 
     return entities.map(
@@ -117,6 +118,13 @@ export class PrismaEntityRepository implements EntityRepository {
           e.phone ?? undefined,
           e.createdAt,
           e.updatedAt,
+          e.Area,
+          e.Area?.map((area) => ({
+            id: area.id,
+            name: area.name,
+            entityId: area.entityId,
+            lastAssignedIndex: area.lastAssignedIndex,
+          })),
         ),
     );
   }

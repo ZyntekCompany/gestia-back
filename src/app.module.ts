@@ -1,7 +1,8 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from './infrastructure/prisma/prisma.service';
+import { GlobalModule } from './module/core/core.module';
 import { EntityModule } from './module/entity.module';
 import { AuthModule } from './module/auth.module';
 import { AreaModule } from './module/area.module';
@@ -21,6 +22,7 @@ import { UserModule } from './module/user.module';
         abortEarly: true,
       },
     }),
+    GlobalModule, // SOLO aquí
     EntityModule,
     AuthModule,
     AreaModule,
@@ -28,8 +30,7 @@ import { UserModule } from './module/user.module';
     RequestModule,
     UserModule,
   ],
-
   controllers: [],
-  providers: [PrismaService],
+  providers: [],
 })
 export class AppModule {}
