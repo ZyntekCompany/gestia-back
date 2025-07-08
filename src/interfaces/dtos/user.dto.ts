@@ -231,4 +231,7 @@ export class UpdateUserByAdminDto {
 
   @ApiPropertyOptional({ description: 'Nuevo ID de área asignada al usuario.' })
   areaId?: string;
+
+  @ApiPropertyOptional({ description: 'Nuevo ID de área asignada al usuario.' })
+  role?: UserRole;
 }

@@ -34,5 +34,5 @@ export interface UserRepository {
     forAdmin?: boolean;
   }): Promise<UserListPaginatedDto>;
 
-  updateUserByAdmin(userId: string, dto: UpdateUserByAdminDto): Promise<any>;
+  updateUserByAdmin(userId: string, dto: UpdateUserByAdminDto): Promise<User>;
 }

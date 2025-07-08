@@ -48,7 +48,7 @@ export class UpdateUserByAdminUseCase {
       throw new ForbiddenException('No puedes editar usuarios de otra entidad');
 
     // 4. Filtra campos permitidos
-    const allowedFields = ['email', 'fullName', 'areaId'];
+    const allowedFields = ['email', 'fullName', 'areaId', 'role'];
     Object.keys(dto).forEach((key) => {
       if (!allowedFields.includes(key)) {
         throw new BadRequestException(`No puedes cambiar el campo: ${key}`);
@@ -56,6 +56,6 @@ export class UpdateUserByAdminUseCase {
     });
 
     // 6. Actualiza
-    return await this.userRepository.updateUser(targetUserId, dto);
+    return await this.userRepository.updateUserByAdmin(targetUserId, dto);
   }
 }

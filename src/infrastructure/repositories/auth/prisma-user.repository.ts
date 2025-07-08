@@ -323,6 +323,7 @@ export class PrismaUserRepository implements UserRepository {
         email: dto.email,
         fullName: dto.fullName,
         areaId: dto.areaId,
+        role: dto.role,
       },
     });
   }
