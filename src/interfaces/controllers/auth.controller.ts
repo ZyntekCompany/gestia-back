@@ -31,6 +31,7 @@ import {
   RegisterCitizenDto,
   RegisterOfficerDto,
   UpdateCitizenDto,
+  UpdateUserByAdminDto,
 } from '../dtos/user.dto';
 import { LoginUseCase } from 'src/application/use-cases/auth/login.use-case';
 import { RefreshTokenUseCase } from 'src/application/use-cases/auth/refresh-token.use-case';
@@ -289,7 +290,7 @@ export class AuthController {
   async updateUserByAdmin(
     @Req() req: { user: JwtPayload },
     @Param('id') id: string,
-    @Body() dto: UpdateCitizenDto,
+    @Body() dto: UpdateUserByAdminDto,
   ) {
     if (!req?.user?.sub) throw new UnauthorizedException('No autenticado');
     // Aquí puede ir un guard de rol, pero también puedes validar en el UseCase

@@ -4,6 +4,7 @@ import { UserRepository } from 'src/domain/repositories/user.repository';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import {
   EntityWithUsersDto,
+  UpdateUserByAdminDto,
   UserListPaginatedDto,
 } from 'src/interfaces/dtos/user.dto';
 
@@ -311,5 +312,18 @@ export class PrismaUserRepository implements UserRepository {
       pageCount,
       entities: Object.values(entitiesMap),
     };
+  }
+  async updateUserByAdmin(
+    userId: string,
+    dto: UpdateUserByAdminDto,
+  ): Promise<any> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        email: dto.email,
+        fullName: dto.fullName,
+        areaId: dto.areaId,
+      },
+    });
   }
 }

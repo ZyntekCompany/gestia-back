@@ -6,7 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { UserRepository } from 'src/domain/repositories/user.repository';
-import { UpdateCitizenDto } from 'src/interfaces/dtos/user.dto';
+import { UpdateUserByAdminDto } from 'src/interfaces/dtos/user.dto';
 import { JwtPayload } from 'src/types/express';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class UpdateUserByAdminUseCase {
   async execute(
     requester: JwtPayload,
     targetUserId: string,
-    dto: UpdateCitizenDto,
+    dto: UpdateUserByAdminDto,
   ) {
     const userId = requester.sub;
 
@@ -54,12 +54,6 @@ export class UpdateUserByAdminUseCase {
         throw new BadRequestException(`No puedes cambiar el campo: ${key}`);
       }
     });
-
-    // 5. Si cambia el correo, marcar como no verificado
-    if (dto.email && dto.email !== targetUser.email) {
-      dto.isEmailVerified = false;
-      // ...manda email de verificación aquí si quieres
-    }
 
     // 6. Actualiza
     return await this.userRepository.updateUser(targetUserId, dto);

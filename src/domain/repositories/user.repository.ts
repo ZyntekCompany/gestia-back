@@ -1,4 +1,7 @@
-import { UserListPaginatedDto } from 'src/interfaces/dtos/user.dto';
+import {
+  UpdateUserByAdminDto,
+  UserListPaginatedDto,
+} from 'src/interfaces/dtos/user.dto';
 import { User } from '../entities/User';
 
 export interface UserRepository {
@@ -30,4 +33,6 @@ export interface UserRepository {
     search?: string;
     forAdmin?: boolean;
   }): Promise<UserListPaginatedDto>;
+
+  updateUserByAdmin(userId: string, dto: UpdateUserByAdminDto): Promise<any>;
 }

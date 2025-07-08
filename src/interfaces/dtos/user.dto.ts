@@ -221,3 +221,14 @@ export class UserListPaginatedDto {
   @ApiProperty() pageCount: number; // <--- nuevo campo
   @ApiProperty({ type: [EntityWithUsersDto] }) entities: EntityWithUsersDto[];
 }
+
+export class UpdateUserByAdminDto {
+  @ApiPropertyOptional({ description: 'Nuevo correo electrónico del usuario.' })
+  email?: string;
+
+  @ApiPropertyOptional({ description: 'Nuevo nombre completo del usuario.' })
+  fullName?: string;
+
+  @ApiPropertyOptional({ description: 'Nuevo ID de área asignada al usuario.' })
+  areaId?: string;
+}
