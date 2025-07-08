@@ -27,7 +27,6 @@ import {
   RefreshTokenResponseDto,
   ResetPasswordRequestDto,
   ResetPasswordResponseDto,
-  DeleteUserRequestDto,
   RegisterCitizenDto,
   RegisterOfficerDto,
   UpdateCitizenDto,
@@ -45,6 +44,7 @@ import { VerifyEmailUseCase } from 'src/application/use-cases/auth/verify-email.
 import { UpdateUserUseCase } from 'src/application/use-cases/auth/update.use-case';
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { UpdateUserByAdminUseCase } from 'src/application/use-cases/auth/update-user-by.use-case';
+import { ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -254,18 +254,18 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
-  @Delete()
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete user' })
-  @ApiBody({ type: DeleteUserRequestDto })
+  @ApiParam({ name: 'id', description: 'ID del usuario a eliminar' })
   @ApiResponse({
     status: 200,
     description: 'Usuario eliminado correctamente',
     type: LogoutResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-  async deleteUser(@Body() request: DeleteUserRequestDto) {
-    await this.userRepository.delete(request.id);
+  async deleteUser(@Param('id') id: string) {
+    await this.userRepository.delete(id);
     return { message: 'Usuario eliminado correctamente' };
   }
 

@@ -105,11 +105,6 @@ export class ResetPasswordResponseDto {
   message: string;
 }
 
-export class DeleteUserRequestDto {
-  @ApiProperty()
-  id: string;
-}
-
 export class RegisterCitizenDto {
   @ApiProperty()
   email: string;
