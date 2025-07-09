@@ -86,7 +86,15 @@ export class LoginResponseDto {
   role: UserRole;
   activate: boolean;
   isEmailVerified: boolean;
-  entity?: { id: string; name: string; imgUrl: string } | null;
+  entity?: {
+    id: string;
+    name: string;
+    imgUrl: string;
+    description: string;
+    phone: string;
+    type: string;
+    active: boolean;
+  } | null;
   area?: { id: string; name: string } | null;
 }
 

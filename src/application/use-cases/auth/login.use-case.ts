@@ -97,6 +97,10 @@ export class LoginUseCase {
         id: user.entity.id,
         name: user.entity.name,
         imgUrl: user.entity.imgUrl,
+        description: user.entity.description!,
+        phone: user.entity.phone!,
+        type: user.entity.type,
+        active: user.entity.active,
       };
     }
 
