@@ -58,4 +58,40 @@ export class PrismaAreaRepository implements AreaRepository {
       where: { id },
     });
   }
+
+  async findAllByEntity(
+    entityId: string,
+    page: number,
+    limit: number,
+    name?: string,
+  ): Promise<{ data: Area[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const where: {
+      entityId: string;
+      name?: { contains: string; mode: 'insensitive' };
+    } = { entityId };
+    if (name) {
+      where.name = { contains: name, mode: 'insensitive' };
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.area.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { name: 'asc' },
+        include: { entity: true },
+      }),
+      this.prisma.area.count({ where }),
+    ]);
+
+    return {
+      data: data.map(
+        (a) =>
+          new Area(a.id, a.name, a.entityId, a.lastAssignedIndex, a.entity),
+      ),
+      total,
+    };
+  }
 }

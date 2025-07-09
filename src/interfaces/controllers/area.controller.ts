@@ -2,27 +2,42 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateAreaUseCase } from 'src/application/use-cases/area/area.use-case';
 import {
   CreateAreaRequestDto,
   CreateAreaResponseDto,
   DeleteAreaRequestDto,
   DeleteAreaResponseDto,
+  PaginatedAreasResponseDto,
   UpdateAreaRequestDto,
 } from '../dtos/area.dto';
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
+import { ListAreasUseCase } from 'src/application/use-cases/area/list-areas.use-case';
 
 @ApiTags('area')
 @Controller('area')
 export class AreaController {
-  constructor(private readonly createAreaUseCase: CreateAreaUseCase) {}
+  constructor(
+    private readonly createAreaUseCase: CreateAreaUseCase,
+    private readonly listAreasUseCase: ListAreasUseCase,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -66,5 +81,36 @@ export class AreaController {
   })
   async delete(@Body() dto: DeleteAreaRequestDto) {
     return this.createAreaUseCase.delete(dto.id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Listar áreas de una entidad con paginación' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    type: String,
+    example: 'Certificados',
+  })
+  @ApiResponse({ status: 200, type: PaginatedAreasResponseDto })
+  async listAreas(
+    @Param('entityId') entityId: string,
+    @Query('page', new ParseIntPipe({ optional: true })) page = 1,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
+    @Query('name') name?: string,
+  ): Promise<PaginatedAreasResponseDto> {
+    const {
+      data,
+      total,
+      page: currentPage,
+      pageCount,
+    } = await this.listAreasUseCase.execute(entityId, page, limit, name);
+    return {
+      data,
+      total,
+      page: currentPage,
+      pageCount,
+    };
   }
 }

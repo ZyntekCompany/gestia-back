@@ -32,3 +32,25 @@ export class DeleteAreaResponseDto {
   @ApiProperty()
   message: string;
 }
+
+export class AreaDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  entityId: string;
+}
+
+export class PaginatedAreasResponseDto {
+  @ApiProperty({ type: [AreaDto] })
+  data: AreaDto[];
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  pageCount: number;
+}
