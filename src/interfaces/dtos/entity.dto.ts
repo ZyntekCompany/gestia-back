@@ -9,7 +9,7 @@ export class CreateEntityRequestDto {
   @ApiProperty({ example: 'Francisco Morazán' })
   type: TypeEntity;
   @ApiProperty()
-  active: boolean;
+  active: string;
   @ApiProperty({ example: 'Calle 123, Barrio Centro' })
   description?: string;
   @ApiProperty({ example: '+50498765432' })

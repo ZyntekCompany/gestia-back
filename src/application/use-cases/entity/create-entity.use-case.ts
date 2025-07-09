@@ -43,11 +43,16 @@ export class CreateEntityUseCase {
 
     const imgUrl = await this.s3Service.uploadFile(file);
 
+    const activeValue =
+      typeof req.active === 'string'
+        ? req.active === 'true'
+        : Boolean(req.active);
+
     const entity = Entity.create(
       req.name,
       TypeEntity[req.type as keyof typeof TypeEntity],
       imgUrl,
-      req.active,
+      activeValue,
       req.description,
       req.phone,
     );

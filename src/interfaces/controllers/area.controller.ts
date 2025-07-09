@@ -84,7 +84,7 @@ export class AreaController {
     return this.createAreaUseCase.delete(id);
   }
 
-  @Get()
+  @Get('entity/:entityId')
   @ApiOperation({ summary: 'Listar áreas de una entidad con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })

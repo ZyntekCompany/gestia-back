@@ -15,6 +15,7 @@ export class PrismaEntityRepository implements EntityRepository {
         name: entity.name,
         description: entity.description,
         phone: entity.phone,
+        active: entity.active,
         imgUrl: entity.imgUrl ?? '',
         type: entity.type,
       },
@@ -65,6 +66,7 @@ export class PrismaEntityRepository implements EntityRepository {
       data: {
         name: entity.name,
         description: entity.description,
+        active: entity.active,
         phone: entity.phone,
         imgUrl: entity.imgUrl,
         updatedAt: new Date(),
