@@ -57,12 +57,17 @@ export class UpdateEntityUseCase {
       }
     }
 
+    const activeValue =
+      typeof req.active === 'string'
+        ? req.active === 'true'
+        : Boolean(req.active);
+
     const entity = new Entity(
       currentEntity.id,
       req.name!,
       TypeEntity[req.type as keyof typeof TypeEntity],
       newImgUrl,
-      req.active,
+      activeValue,
       req.description,
       req.phone,
     );
