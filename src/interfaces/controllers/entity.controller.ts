@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Param,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -69,7 +70,7 @@ export class Entityontroller {
     return this.createEntityUseCase.execute(createEntityDto, file);
   }
 
-  @Patch()
+  @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
@@ -79,6 +80,7 @@ export class Entityontroller {
   })
   @UseInterceptors(FileInterceptor('imgUrl'))
   async updateEntity(
+    @Param('id') id: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -93,7 +95,7 @@ export class Entityontroller {
     @Req() req: Request,
   ): Promise<CreateEntityResponseDto> {
     updateEntityDto.user = req.user as UpdateEntityRequestDto['user'];
-    return this.udpateEntityUseCase.Update(updateEntityDto, file);
+    return this.udpateEntityUseCase.Update(id, updateEntityDto, file);
   }
 
   @Get('types')

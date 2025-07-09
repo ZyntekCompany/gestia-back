@@ -17,6 +17,7 @@ export class UpdateEntityUseCase {
   ) {}
 
   async Update(
+    id: string,
     req: UpdateEntityRequestDto,
     file?: Express.Multer.File,
   ): Promise<CreateEntityResponseDto> {
@@ -36,7 +37,7 @@ export class UpdateEntityUseCase {
       );
     }
 
-    const currentEntity = await this.repo.findById(req.id);
+    const currentEntity = await this.repo.findById(id);
     if (!currentEntity) {
       throw new UnauthorizedException('Entidad no encontrada');
     }
