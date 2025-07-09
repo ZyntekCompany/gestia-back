@@ -18,12 +18,12 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 import { CreateAreaUseCase } from 'src/application/use-cases/area/area.use-case';
 import {
   CreateAreaRequestDto,
   CreateAreaResponseDto,
-  DeleteAreaRequestDto,
   DeleteAreaResponseDto,
   PaginatedAreasResponseDto,
   UpdateAreaRequestDto,
@@ -55,32 +55,33 @@ export class AreaController {
     return this.createAreaUseCase.execute(request);
   }
 
-  @Patch()
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Actualizar área' })
+  @ApiParam({ name: 'id', description: 'ID del área a actualizar' })
   @ApiBody({ type: UpdateAreaRequestDto })
   @ApiResponse({
     status: 200,
     description: 'Área actualizada correctamente',
     type: CreateAreaResponseDto,
   })
-  async update(@Body() dto: UpdateAreaRequestDto) {
-    return this.createAreaUseCase.update(dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateAreaRequestDto) {
+    return this.createAreaUseCase.update(id, dto);
   }
 
-  @Delete()
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Eliminar área' })
-  @ApiBody({ type: DeleteAreaRequestDto })
+  @ApiParam({ name: 'id', description: 'ID del área a eliminar' })
   @ApiResponse({
     status: 200,
     description: 'Área eliminada correctamente',
     type: DeleteAreaResponseDto,
   })
-  async delete(@Body() dto: DeleteAreaRequestDto) {
-    return this.createAreaUseCase.delete(dto.id);
+  async delete(@Param('id') id: string) {
+    return this.createAreaUseCase.delete(id);
   }
 
   @Get()

@@ -25,11 +25,11 @@ export class CreateAreaUseCase {
     };
   }
 
-  async update(dto: UpdateAreaRequestDto) {
-    const area = await this.areaRepository.findById(dto.id);
+  async update(id: string, dto: UpdateAreaRequestDto) {
+    const area = await this.areaRepository.findById(id);
     if (!area) throw new NotFoundException('Área no encontrada');
 
-    return this.areaRepository.updateArea(dto.id, { name: dto.name });
+    return this.areaRepository.updateArea(id, { name: dto.name });
   }
 
   async delete(id: string) {

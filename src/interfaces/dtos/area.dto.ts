@@ -24,11 +24,6 @@ export class UpdateAreaRequestDto {
   name?: string;
 }
 
-export class DeleteAreaRequestDto {
-  @ApiProperty()
-  id: string;
-}
-
 export class DeleteAreaResponseDto {
   @ApiProperty()
   message: string;
