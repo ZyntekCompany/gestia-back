@@ -94,6 +94,7 @@ export class LoginResponseDto {
     phone: string;
     type: string;
     active: boolean;
+    createdAt: Date;
   } | null;
   area?: { id: string; name: string } | null;
 }

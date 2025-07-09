@@ -101,6 +101,7 @@ export class LoginUseCase {
         phone: user.entity.phone!,
         type: user.entity.type,
         active: user.entity.active,
+        createdAt: user.createdAt,
       };
     }
 
