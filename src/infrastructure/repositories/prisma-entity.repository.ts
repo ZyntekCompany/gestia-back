@@ -100,7 +100,6 @@ export class PrismaEntityRepository implements EntityRepository {
       where: {
         type,
         ...(name && { name: { contains: name, mode: 'insensitive' } }),
-        active: true,
       },
       skip,
       take,
