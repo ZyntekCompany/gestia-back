@@ -54,5 +54,5 @@ export class UpdateEntityRequestDto {
   @ApiProperty({ example: 'Francisco Morazán' })
   type?: TypeEntity;
   @ApiProperty()
-  active: boolean;
+  active: string;
 }
