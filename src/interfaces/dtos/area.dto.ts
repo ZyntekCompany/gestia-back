@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { AreaDto } from './user.dto';
 
 export class CreateAreaRequestDto {
   @ApiProperty({ example: 'Escuela Nacional de Ciencias' })
@@ -31,14 +32,6 @@ export class DeleteAreaRequestDto {
 export class DeleteAreaResponseDto {
   @ApiProperty()
   message: string;
-}
-
-export class AreaDto {
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  entityId: string;
 }
 
 export class PaginatedAreasResponseDto {

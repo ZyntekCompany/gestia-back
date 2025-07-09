@@ -28,6 +28,8 @@ model Area {
   procedures        Procedure[]
   lastAssignedIndex Int         @default(0) // ← para la rotación
   Request           Request[]
+  // createdAt         DateTime    @default(now())
+  // updatedAt         DateTime    @updatedt
 }
 
 // schema.prisma

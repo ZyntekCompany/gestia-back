@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AreaRepository } from 'src/domain/repositories/area.repository';
-import { AreaDto } from 'src/interfaces/dtos/area.dto';
+import { AreaDto } from 'src/interfaces/dtos/user.dto';
 
 @Injectable()
 export class ListAreasUseCase {
