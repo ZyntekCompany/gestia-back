@@ -62,41 +62,45 @@ export class RegisterUseCase {
 
     // Validar entidad y área según el rol
     if (role === UserRole.SUPER) {
-      // SUPER no necesita entidad ni área
       if (entityId || areaId) {
         throw new BadRequestException(
           'El rol SUPER no requiere entidad ni área',
         );
       }
-    } else {
-      // Otros roles necesitan entidad
+    } else if (role === UserRole.ADMIN) {
       if (!entityId) {
         throw new BadRequestException(
           'Se requiere el id de la entidad para este rol',
         );
       }
-
+      if (areaId) {
+        throw new BadRequestException(
+          'El rol ADMIN no debe tener área asignada al crearse',
+        );
+      }
+    } else {
+      // Otros roles necesitan entidad y área
+      if (!entityId) {
+        throw new BadRequestException(
+          'Se requiere el id de la entidad para este rol',
+        );
+      }
       // Validar existencia de entidad
       const entityExists = await this.entityRepository.findById(entityId);
       if (!entityExists) {
         throw new BadRequestException(`La entidad ${entityId} no existe`);
       }
-
-      // Para roles que necesitan área
-      if (role === UserRole.OFFICER) {
-        if (!areaId) {
-          throw new BadRequestException(
-            'Se requiere el id del área para este rol',
-          );
-        }
-
-        // Validar que el área pertenezca a la entidad
-        const area = await this.areaRepository.findById(areaId);
-        if (!area || area.entityId !== entityId) {
-          throw new BadRequestException(
-            `El área ${areaId} no pertenece a la entidad ${entityId}`,
-          );
-        }
+      if (!areaId) {
+        throw new BadRequestException(
+          'Se requiere el id del área para este rol',
+        );
+      }
+      // Validar que el área pertenezca a la entidad
+      const area = await this.areaRepository.findById(areaId);
+      if (!area || area.entityId !== entityId) {
+        throw new BadRequestException(
+          `El área ${areaId} no pertenece a la entidad ${entityId}`,
+        );
       }
     }
 
