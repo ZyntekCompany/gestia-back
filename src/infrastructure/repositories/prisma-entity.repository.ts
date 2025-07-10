@@ -104,7 +104,7 @@ export class PrismaEntityRepository implements EntityRepository {
       skip,
       take,
       orderBy: { name: 'asc' },
-      include: { Area: true },
+      include: { Area: true, procedures: true },
     });
 
     return entities.map(
@@ -120,11 +120,18 @@ export class PrismaEntityRepository implements EntityRepository {
           e.createdAt,
           e.updatedAt,
           e.Area,
+          e.procedures,
           e.Area?.map((area) => ({
             id: area.id,
             name: area.name,
             entityId: area.entityId,
             lastAssignedIndex: area.lastAssignedIndex,
+          })),
+          e.procedures?.map((procedure) => ({
+            id: procedure.id,
+            name: procedure.name,
+            description: procedure.description ?? '',
+            maxResponseDays: procedure.maxResponseDays,
           })),
         ),
     );

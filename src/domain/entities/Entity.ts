@@ -1,4 +1,4 @@
-import { Area } from '@prisma/client';
+import { Area, Procedure } from '@prisma/client';
 import { TypeEntity as PrismaTypeEntity } from '@prisma/client';
 
 export const TypeEntity = PrismaTypeEntity;
@@ -16,12 +16,19 @@ export class Entity {
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date(),
     public readonly Area?: Area[],
+    public readonly procedures?: Procedure[],
     public areas?: {
       id: string;
       name: string;
       entityId: string;
       lastAssignedIndex: number;
-    }[], // ← Agrega esto
+    }[],
+    public proceduress?: {
+      id: string;
+      name: string;
+      description: string;
+      maxResponseDays: number;
+    }[],
   ) {}
 
   static create(
