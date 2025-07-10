@@ -60,3 +60,12 @@ export class DeleteProcedureRequestDto {
   @ApiProperty()
   id: string;
 }
+
+export class ListProcedureByAreaResponseDto {
+  id: string;
+  name: string;
+  description: string;
+  maxResponseDays: number;
+  entityId: string;
+  areaId: string;
+}

@@ -4,6 +4,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -16,11 +17,13 @@ import { CreateProcedureUseCase } from 'src/application/use-cases/procedure/crea
 import {
   CreateProcedureRequestDto,
   CreateProcedureResponseDto,
+  ListProcedureByAreaResponseDto,
   UpdateProcedureRequestDto,
 } from '../dtos/procedure.dto';
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { UpdateProcedureUseCase } from 'src/application/use-cases/procedure/update-procedure.use-case';
 import { DeleteProcedureUseCase } from 'src/application/use-cases/procedure/delete-procedure.use-case';
+import { ListProcedureByAreaUseCase } from 'src/application/use-cases/procedure/list-by-area.use-case';
 
 @ApiTags('procedure')
 @Controller('procedure')
@@ -29,6 +32,7 @@ export class ProcedureController {
     private readonly createProcedureUseCase: CreateProcedureUseCase,
     private readonly updateProcedureUseCase: UpdateProcedureUseCase,
     private readonly deleteProcedureUseCase: DeleteProcedureUseCase,
+    private readonly listProcedureByAreaUseCase: ListProcedureByAreaUseCase,
   ) {}
 
   @Post()
@@ -71,5 +75,18 @@ export class ProcedureController {
   async delete(@Param('id') id: string) {
     await this.deleteProcedureUseCase.execute(id);
     return { message: 'Procedimiento eliminado exitosamente' };
+  }
+
+  @Get('by-area/:areaId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener procedimientos por área' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de procedimientos',
+    type: ListProcedureByAreaResponseDto,
+    isArray: true,
+  })
+  async findByArea(@Param('areaId') areaId: string) {
+    return this.listProcedureByAreaUseCase.execute(areaId);
   }
 }

@@ -70,4 +70,21 @@ export class PrismaProcedureRepository implements ProcedureRepository {
       where: { id },
     });
   }
+
+  async findByAreaId(areaId: string): Promise<Procedure[]> {
+    const procedures = await this.prisma.procedure.findMany({
+      where: { areaId },
+    });
+    return procedures.map(
+      (p) =>
+        new Procedure(
+          p.id,
+          p.name,
+          p.description,
+          p.maxResponseDays,
+          p.entityId,
+          p.areaId,
+        ),
+    );
+  }
 }
