@@ -50,7 +50,7 @@ export class PrismaRequestRepository implements RequestRepository {
       data: {
         subject: dto.subject,
         content: dto.content,
-        status: 'ASSIGNED',
+        status: 'PENDING',
         procedureId: dto.procedureId,
         citizenId,
         assignedToId: assignedOfficer.id,

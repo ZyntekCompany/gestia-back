@@ -159,13 +159,10 @@ model Request {
 }
 
 enum RequestStatus {
-  ASSIGNED
   IN_REVIEW
-  COMPLETED_ON_TIME
-  COMPLETED_LATE
+  COMPLETED
   PENDING
   OVERDUE
-  CLOSED
 }
 
 model Document {

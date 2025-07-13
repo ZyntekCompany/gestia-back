@@ -76,6 +76,7 @@ export class PrismaPasswordResetRepository implements PasswordResetRepository {
       where: { email: passwordReset.email },
       data: {
         isEmailVerified: true,
+        active: true,
       },
     });
 

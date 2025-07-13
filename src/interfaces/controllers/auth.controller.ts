@@ -46,7 +46,7 @@ import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { UpdateUserByAdminUseCase } from 'src/application/use-cases/auth/update-user-by.use-case';
 import { ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Authentication')
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(

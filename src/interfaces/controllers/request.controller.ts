@@ -27,7 +27,9 @@ import { RequestStatus } from '@prisma/client';
 import type { InputJsonValue } from '@prisma/client/runtime/library';
 import { JwtPayload } from 'src/types/express';
 import { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('requests')
 @Controller('requests')
 export class RequestController {
   constructor(
@@ -89,7 +91,7 @@ export class RequestController {
       data: {
         subject: dto.subject,
         content: content,
-        status: 'ASSIGNED',
+        status: 'PENDING',
         procedureId: dto.procedureId,
         citizenId: userId,
         assignedToId: assignedOfficer.id,

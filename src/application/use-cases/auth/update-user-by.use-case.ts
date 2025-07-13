@@ -37,12 +37,6 @@ export class UpdateUserByAdminUseCase {
     if (!targetUser)
       throw new BadRequestException('Usuario a editar no existe');
 
-    // 2. Validar roles: admin NO puede editar admins ni super, solo sus empleados
-    if (targetUser.role === 'ADMIN' && user.role !== 'SUPER')
-      throw new ForbiddenException('No puedes editar a otros administradores');
-    if (targetUser.role === 'SUPER' && user.role !== 'SUPER')
-      throw new ForbiddenException('Solo SUPER puede editar a SUPER');
-
     // 3. (Opcional) Si tienes entidadId: admin solo puede editar usuarios de su propia entidad
     if (user.role === 'ADMIN' && targetUser.entity?.id !== user.entity?.id)
       throw new ForbiddenException('No puedes editar usuarios de otra entidad');
