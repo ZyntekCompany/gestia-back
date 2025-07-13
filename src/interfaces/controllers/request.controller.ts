@@ -229,8 +229,8 @@ export class RequestController {
   async getAssignedRequests(
     @Req() req: Request,
     @Query('status') status?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
     const userRole = (req.user as JwtPayload | undefined)?.role;
     const userId = (req.user as JwtPayload | undefined)?.sub;
@@ -242,7 +242,9 @@ export class RequestController {
       throw new BadRequestException('Usuario no autenticado');
     }
 
-    const skip = (page - 1) * limit;
+    const pageNumber = parseInt(page ?? '1', 10);
+    const limitNumber = parseInt(limit ?? '10', 10);
+    const skip = (pageNumber - 1) * limitNumber;
 
     const where: { assignedToId: string; status?: RequestStatus } = {
       assignedToId: userId,
@@ -255,7 +257,7 @@ export class RequestController {
         where,
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit,
+        take: limitNumber, // <-- ahora es un número
         include: {
           citizen: { select: { id: true, fullName: true, email: true } },
           procedure: { select: { id: true, name: true } },
@@ -265,6 +267,47 @@ export class RequestController {
       }),
     ]);
 
-    return { total, page, limit, requests };
+    return {
+      data: requests,
+      total,
+      page: pageNumber,
+      pageCount: Math.ceil(total / limitNumber),
+    };
+  }
+
+  @Get('my-assigned/count-by-status')
+  @UseGuards(JwtAuthGuard)
+  async getAssignedRequestCounts(@Req() req: Request) {
+    const userRole = (req.user as JwtPayload | undefined)?.role;
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+
+    const allStatuses: RequestStatus[] = [
+      'PENDING',
+      'IN_REVIEW',
+      'COMPLETED',
+      'OVERDUE',
+    ];
+
+    if (!userRole || !['OFFICER', 'ADMIN', 'SUPER'].includes(userRole)) {
+      throw new BadRequestException('No autorizado');
+    }
+    if (!userId) {
+      throw new BadRequestException('Usuario no autenticado');
+    }
+
+    const counts = await this.prisma.request.groupBy({
+      by: ['status'],
+      where: { assignedToId: userId },
+      _count: true,
+    });
+
+    // Opcional: transformar la respuesta a un objeto más limpio
+    const result = Object.fromEntries(
+      allStatuses.map((status) => [
+        status,
+        counts.find((c) => c.status === status)?._count ?? 0,
+      ]),
+    );
+    return result;
   }
 }
