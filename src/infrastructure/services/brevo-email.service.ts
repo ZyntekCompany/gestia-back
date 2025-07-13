@@ -37,8 +37,425 @@ export class BrevoEmailService implements EmailService {
     }
   }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+  async sendResetEmail(
+    email: string,
+    fullName: string,
+    token: string,
+  ): Promise<void> {
+    const resetUrl = `http://localhost:3000/reestablecer-clave?token=${token}`;
+
+    const emailData: BrevoEmailRequest = {
+      sender: {
+        name: this.senderName,
+        email: this.senderEmail,
+      },
+      to: [
+        {
+          email: email,
+        },
+      ],
+      subject: 'Restablece tu contraseña - Gestia',
+      htmlContent: `
+ <html project="Gestia Email" file="welcome-email.html" type="html">
+        |<head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Bienvenido a Gestia</title>
+            <style>
+                /* Basic reset and common styles for email compatibility */
+                body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+                table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                img { -ms-interpolation-mode: bicubic; }
+                a[x-apple-data-detectors] {
+                    color: inherit !important;
+                    text-decoration: none !important;
+                    font-size: inherit !important;
+                    font-family: inherit !important;
+                    font-weight: inherit !important;
+                    line-height: inherit !important;
+                }
+                /* Responsive styles */
+                @media screen and (max-width: 600px) {
+                    .full-width-table {
+                        width: 100% !important;
+                    }
+                    .content-padding {
+                        padding: 20px !important;
+                    }
+                    .button-wrapper {
+                        padding: 10px 0 !important;
+                    }
+                    .button-link {
+                        padding: 12px 20px !important;
+                        font-size: 16px !important;
+                    }
+                }
+            </style>
+        </head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+  
+    <div style="display: none; font-size: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+        Bienvenido a Gestia - Establece tu contraseña para empezar.
+    </div>
+<center style="width: 100%; background-color: #f4f4f4;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-collapse: collapse;">
+      
+        <tr>
+            <td align="center" style="padding: 40px 20px 20px 20px;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="center">
+                            <svg width="80" height="80" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M33.724 36.5809C37.7426 32.5622 40.0003 27.1118 40.0003 21.4286C40.0003 15.7454 37.7426 10.2949 33.724 6.27629C29.7054 2.25765 24.2549 1.02188e-06 18.5717 0C12.8885 -1.02188e-06 7.43807 2.25764 3.41943 6.27628L10.4905 13.3473C11.6063 14.4631 13.4081 14.4074 14.8276 13.7181C15.9836 13.1568 17.2622 12.8571 18.5717 12.8571C20.845 12.8571 23.0252 13.7602 24.6326 15.3677C26.2401 16.9751 27.1431 19.1553 27.1431 21.4286C27.1431 22.7381 26.8435 24.0167 26.2822 25.1727C25.5929 26.5922 25.5372 28.394 26.6529 29.5098L33.724 36.5809Z" fill="#297AFF"></path>
+                                <path d="M30 40H19.5098C17.9943 40 16.5408 39.398 15.4692 38.3263L1.67368 24.5308C0.60204 23.4592 0 22.0057 0 20.4902V10L30 40Z" fill="#34C2FF"></path>
+                                <path d="M10.7143 39.9999H4.28571C1.91878 39.9999 0 38.0812 0 35.7142V29.2856L10.7143 39.9999Z" fill="#34C2FF"></path>
+                            </svg>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #333333;">
+                            Gestia
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td align="left" class="content-padding" style="padding: 20px 40px 20px 40px; font-size: 16px; line-height: 24px; color: #333333;">
+                <p style="margin: 0;">¡Hola ${fullName}	 !</p>
+                <p style="margin: 20px 0 0 0;">¡Bienvenido a Gestia! Estamos emocionados de tenerte a bordo.</p>
+                <p style="margin: 20px 0 0 0;">Gestia es tu nueva aplicación web y móvil diseñada para simplificar la comunicación con empresas y facilitar la solicitud de trámites desde la comodidad de tu hogar, funcionando como un Sistema de Atención al Ciudadano (SAC).</p>
+                <p style="margin: 20px 0 0 0;">Para comenzar a disfrutar de todos los beneficios de Gestia, por favor, establece una contraseña para tu usuario haciendo clic en el botón de abajo:</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td align="center" class="button-wrapper" style="padding: 20px 40px 40px 40px;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="center" style="border-radius: 5px; background-color: #297AFF;">
+                            <a href=${resetUrl} target="_blank" style="font-size: 18px; font-family: Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 15px 25px; border: 1px solid #297AFF; display: inline-block; font-weight: bold;">
+                                Establecer Contraseña
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin-top: 20px; font-size: 12px; color: #666666;">
+                    <small>Si el botón no funciona, copia y pega este enlace en tu navegador:</small><br>
+                    <a href=${resetUrl} style="color: #297AFF; text-decoration: underline;">
+                        ${resetUrl}
+                    </a>
+                </p>
+              
+            </td>
+        </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 20px 40px; font-size: 14px; line-height: 20px; color: #999999; background-color: #f0f0f0;">
+                            <p style="margin: 0;">Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.</p>
+                            <p style="margin: 10px 0 0 0;">&copy; 2025 Gestia. Todos los derechos reservados.</p>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </body>
+    </html>`,
+      textContent: `
+        Restablece tu Contraseña - Gestia
+        
+        ¡Hola!
+        
+        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Gestia.
+        
+        Haz clic en este enlace para restablecer tu contraseña: ${resetUrl}
+        
+        Este enlace expirará en 1 hora por motivos de seguridad.
+        
+        Si no solicitaste este cambio, puedes ignorar este correo de forma segura.
+        
+        Saludos,
+        El equipo de Gestia
+      `,
+    };
+
+    await this.sendEmail(emailData);
+  }
+
+  async sendEmailVerification(
+    email: string,
+    firstName: string,
+    token: string,
+  ): Promise<void> {
+    const verificationUrl = `http://localhost:3000/verificacion-correo?token=${token}`;
+
+    const emailData: BrevoEmailRequest = {
+      sender: {
+        name: this.senderName,
+        email: this.senderEmail,
+      },
+      to: [
+        {
+          email: email,
+        },
+      ],
+      subject:
+        '¡Bienvenido a Gestia! Por favor, verifica tu correo electrónico',
+      htmlContent: `
+     <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Gestia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            padding: 32px 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: -0.5px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 24px;
+            margin-top: 16px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            display: block;
+            width: 100%;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 32px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            background-color: #1d4ed8;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+        }
+
+        .help-section {
+            background-color: #fefefe;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+        
+        .url-container {
+            background-color: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        .help-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        .contact-info {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 16px;
+        }
+
+        .signature {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 40px;
+            border-top: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 0;
+                box-shadow: none;
+            }
+            
+            .content, .header {
+                padding: 24px;
+            }
+            
+            .brand-name {
+                font-size: 24px;
+            }
+            
+            .welcome-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+           <tr>
+            <td align="center" style="padding: 40px 20px 20px 20px;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="center">
+                            <svg width="80" height="80" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M33.724 36.5809C37.7426 32.5622 40.0003 27.1118 40.0003 21.4286C40.0003 15.7454 37.7426 10.2949 33.724 6.27629C29.7054 2.25765 24.2549 1.02188e-06 18.5717 0C12.8885 -1.02188e-06 7.43807 2.25764 3.41943 6.27628L10.4905 13.3473C11.6063 14.4631 13.4081 14.4074 14.8276 13.7181C15.9836 13.1568 17.2622 12.8571 18.5717 12.8571C20.845 12.8571 23.0252 13.7602 24.6326 15.3677C26.2401 16.9751 27.1431 19.1553 27.1431 21.4286C27.1431 22.7381 26.8435 24.0167 26.2822 25.1727C25.5929 26.5922 25.5372 28.394 26.6529 29.5098L33.724 36.5809Z" fill="#297AFF"></path>
+                                <path d="M30 40H19.5098C17.9943 40 16.5408 39.398 15.4692 38.3263L1.67368 24.5308C0.60204 23.4592 0 22.0057 0 20.4902V10L30 40Z" fill="#34C2FF"></path>
+                                <path d="M10.7143 39.9999H4.28571C1.91878 39.9999 0 38.0812 0 35.7142V29.2856L10.7143 39.9999Z" fill="#34C2FF"></path>
+                            </svg>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #333333;">
+                            Gestia
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        </header>
+
+        <main class="content">
+            <h2 class="welcome-title">¡Bienvenido, ${firstName}!</h2>
+            
+            <p class="description">
+                Gracias por registrarte en Gestia. Para activar tu cuenta y comenzar a disfrutar de nuestros servicios, por favor verifica tu correo electrónico haciendo clic en el siguiente botón:
+            </p>
+
+            <a href="${verificationUrl}" class="cta-button">Verificar correo electrónico</a>
+
+            <div class="help-section">
+                <p class="help-text">
+                    Si el botón no funciona, copia y pega el siguiente enlace en la barra de direcciones de tu navegador:
+                </p>
+                <div class="url-container">
+                    <a href="${verificationUrl}" class="help-link">${verificationUrl}</a>
+                </div>
+                
+                <div class="contact-info">
+                    <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactar a nuestro equipo de soporte.</p>
+                </div>
+                
+                <div class="signature">
+                    <p>Saludos cordiales,<br>El equipo de Gestia</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p class="copyright">© Todos los Derechos Reservados</p>
+        </footer>
+    </div>
+</body>
+</html>
+      `,
+      textContent: `
+        ¡Bienvenido a Gestia!
+        
+        ¡Hola, ${firstName}!
+        
+        Gracias por registrarte en Gestia.
+        Para activar tu cuenta, haz clic en este enlace: ${verificationUrl}
+        
+        Si el botón no funciona, copia y pega el enlace en tu navegador.
+        
+        ¡Bienvenido a bordo!
+        El equipo de Gestia
+      `,
+    };
+
+    await this.sendEmail(emailData);
+  }
+
+  async sendResetPassword(email: string, token: string): Promise<void> {
+    const resetUrl = `http://localhost:3000/reestablecer-clave?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -337,15 +754,26 @@ export class BrevoEmailService implements EmailService {
             <div class="email-wrapper">
                 <div class="email-container">
                     <header class="email-header">
-                        <div class="header-content">
-                            <div class="logo-container">
-                                <img src="https://eduadminsoft-s3.s3.us-east-1.amazonaws.com/schools/descarga-removebg-preview.png" 
-                                     alt="Gestia Logo" 
-                                     class="logo">
-                                <h1 class="brand-name">Gestia</h1>
-                            </div>
-                            <h2 class="header-title">Restablece tu Contraseña</h2>
-                        </div>
+                        <tr>
+            <td align="center" style="padding: 40px 20px 20px 20px;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="center">
+                            <svg width="80" height="80" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M33.724 36.5809C37.7426 32.5622 40.0003 27.1118 40.0003 21.4286C40.0003 15.7454 37.7426 10.2949 33.724 6.27629C29.7054 2.25765 24.2549 1.02188e-06 18.5717 0C12.8885 -1.02188e-06 7.43807 2.25764 3.41943 6.27628L10.4905 13.3473C11.6063 14.4631 13.4081 14.4074 14.8276 13.7181C15.9836 13.1568 17.2622 12.8571 18.5717 12.8571C20.845 12.8571 23.0252 13.7602 24.6326 15.3677C26.2401 16.9751 27.1431 19.1553 27.1431 21.4286C27.1431 22.7381 26.8435 24.0167 26.2822 25.1727C25.5929 26.5922 25.5372 28.394 26.6529 29.5098L33.724 36.5809Z" fill="#297AFF"></path>
+                                <path d="M30 40H19.5098C17.9943 40 16.5408 39.398 15.4692 38.3263L1.67368 24.5308C0.60204 23.4592 0 22.0057 0 20.4902V10L30 40Z" fill="#34C2FF"></path>
+                                <path d="M10.7143 39.9999H4.28571C1.91878 39.9999 0 38.0812 0 35.7142V29.2856L10.7143 39.9999Z" fill="#34C2FF"></path>
+                            </svg>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #333333;">
+                            Gestia
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
                     </header>
 
                     <main class="email-content">
@@ -418,264 +846,6 @@ export class BrevoEmailService implements EmailService {
         Si no solicitaste este cambio, puedes ignorar este correo de forma segura.
         
         Saludos,
-        El equipo de Gestia
-      `,
-    };
-
-    await this.sendEmail(emailData);
-  }
-
-  async sendEmailVerification(
-    email: string,
-    firstName: string,
-    token: string,
-  ): Promise<void> {
-    const verificationUrl = `http://localhost:3000/verificacion-correo?token=${token}`;
-
-    const emailData: BrevoEmailRequest = {
-      sender: {
-        name: this.senderName,
-        email: this.senderEmail,
-      },
-      to: [
-        {
-          email: email,
-        },
-      ],
-      subject:
-        '¡Bienvenido a Gestia! Por favor, verifica tu correo electrónico',
-      htmlContent: `
-     <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a Gestia</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            padding: 32px 40px 20px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .logo {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-        }
-
-        .brand-name {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1e293b;
-            letter-spacing: -0.5px;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .welcome-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 24px;
-            margin-top: 16px;
-        }
-
-        .description {
-            font-size: 16px;
-            color: #475569;
-            margin-bottom: 32px;
-            line-height: 1.7;
-        }
-
-        .cta-button {
-            display: block;
-            width: 100%;
-            background-color: #2563eb;
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 32px;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            background-color: #1d4ed8;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
-        }
-
-        .help-section {
-            background-color: #fefefe;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }
-
-        .help-text {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 12px;
-        }
-        
-        .url-container {
-            background-color: #f8fafc;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            margin-bottom: 16px;
-        }
-
-        .help-link {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 14px;
-            word-wrap: break-word;
-            word-break: break-all;
-        }
-
-        .help-link:hover {
-            text-decoration: underline;
-        }
-
-        .contact-info {
-            font-size: 14px;
-            color: #64748b;
-            margin-top: 16px;
-        }
-
-        .signature {
-            font-size: 14px;
-            color: #64748b;
-            margin-top: 8px;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 24px 40px;
-            border-top: 1px solid #e2e8f0;
-            background-color: #f8fafc;
-        }
-
-        .copyright {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                margin: 0;
-                box-shadow: none;
-            }
-            
-            .content, .header {
-                padding: 24px;
-            }
-            
-            .brand-name {
-                font-size: 24px;
-            }
-            
-            .welcome-title {
-                font-size: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="logo-container">
-                <img src="https://eduadminsoft-s3.s3.us-east-1.amazonaws.com/schools/descarga-removebg-preview.png" 
-                     alt="Gestia Logo" 
-                     class="logo">
-                <h1 class="brand-name">${this.senderName}</h1>
-            </div>
-        </header>
-
-        <main class="content">
-            <h2 class="welcome-title">¡Bienvenido, ${firstName}!</h2>
-            
-            <p class="description">
-                Gracias por registrarte en Gestia. Para activar tu cuenta y comenzar a disfrutar de nuestros servicios, por favor verifica tu correo electrónico haciendo clic en el siguiente botón:
-            </p>
-
-            <a href="${verificationUrl}" class="cta-button">Verificar correo electrónico</a>
-
-            <div class="help-section">
-                <p class="help-text">
-                    Si el botón no funciona, copia y pega el siguiente enlace en la barra de direcciones de tu navegador:
-                </p>
-                <div class="url-container">
-                    <a href="${verificationUrl}" class="help-link">${verificationUrl}</a>
-                </div>
-                
-                <div class="contact-info">
-                    <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactar a nuestro equipo de soporte.</p>
-                </div>
-                
-                <div class="signature">
-                    <p>Saludos cordiales,<br>El equipo de Gestia</p>
-                </div>
-            </div>
-        </main>
-
-        <footer class="footer">
-            <p class="copyright">© Todos los Derechos Reservados</p>
-        </footer>
-    </div>
-</body>
-</html>
-      `,
-      textContent: `
-        ¡Bienvenido a Gestia!
-        
-        ¡Hola, ${firstName}!
-        
-        Gracias por registrarte en Gestia.
-        Para activar tu cuenta, haz clic en este enlace: ${verificationUrl}
-        
-        Si el botón no funciona, copia y pega el enlace en tu navegador.
-        
-        ¡Bienvenido a bordo!
         El equipo de Gestia
       `,
     };

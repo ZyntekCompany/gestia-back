@@ -174,7 +174,7 @@ export class RegisterUseCase {
     fullName: string,
     token: string,
   ): Promise<void> {
-    await this.emailService.sendEmailVerification(email, fullName, token);
+    await this.emailService.sendResetEmail(email, fullName, token);
     console.log(`Email de bienvenida enviado a: ${email}`);
   }
 

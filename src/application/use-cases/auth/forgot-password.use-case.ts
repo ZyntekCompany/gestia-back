@@ -53,7 +53,7 @@ export class ForgotPasswordUseCase {
     }
 
     try {
-      await this.emailService.sendPasswordResetEmail(request.email, token);
+      await this.emailService.sendResetPassword(request.email, token);
     } catch (error) {
       console.error('Error enviando email:', error);
     }
