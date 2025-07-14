@@ -71,20 +71,48 @@ export class PrismaRequestRepository implements RequestRepository {
       });
     }
 
-    // Devuelve historial completo y ordenado DESC (más nuevo primero)
-    return this.prisma.requestUpdate.findMany({
-      where: { requestId: id },
-      orderBy: { createdAt: 'desc' }, // ← Cambia aquí a descendente
+    // 1. Obtén la información original de la solicitud
+    const request = await this.prisma.request.findUnique({
+      where: { id },
       include: {
-        // Datos completos del usuario que realizó el update
-        updatedBy: true,
-        // Documentos asociados a este update
+        citizen: { select: { id: true, fullName: true, email: true } },
+        procedure: { select: { id: true, name: true } },
+        currentArea: { select: { id: true, name: true } },
         Document: true,
-        // Puedes incluir áreas si quieres mostrar los nombres de área en cambios de área
+      },
+    });
+
+    if (!request) throw new NotFoundException('Solicitud no encontrada');
+
+    // 2. Obtén el historial de updates
+    const updates = await this.prisma.requestUpdate.findMany({
+      where: { requestId: id },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        updatedBy: true,
+        Document: true,
         fromArea: { select: { id: true, name: true } },
         toArea: { select: { id: true, name: true } },
       },
     });
+
+    // 3. Devuelve el historial con la info original al inicio
+    return [
+      {
+        type: 'ORIGINAL',
+        id: request.id,
+        subject: request.subject,
+        content: request.content,
+        createdAt: request.createdAt,
+        createdBy: request.citizen,
+        procedure: request.procedure,
+        currentArea: request.currentArea,
+        documents: request.Document,
+        status: request.status,
+        // ...otros campos que quieras mostrar
+      },
+      ...updates,
+    ];
   }
 
   async findById(id: string): Promise<RequestEntity> {
