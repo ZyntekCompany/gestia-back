@@ -102,7 +102,7 @@ export class PrismaRequestRepository implements RequestRepository {
         type: 'ORIGINAL',
         id: request.id,
         subject: request.subject,
-        content: request.content,
+        data: request.content,
         createdAt: request.createdAt,
         createdBy: request.citizen,
         procedure: request.procedure,
