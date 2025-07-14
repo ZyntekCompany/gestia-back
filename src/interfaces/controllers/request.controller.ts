@@ -187,6 +187,10 @@ export class RequestController {
         throw new BadRequestException('El campo data debe ser JSON válido');
       }
     }
+    await this.prisma.request.update({
+      where: { id },
+      data: { status: 'IN_REVIEW' },
+    });
 
     const respuesta = await this.prisma.requestUpdate.create({
       data: {
