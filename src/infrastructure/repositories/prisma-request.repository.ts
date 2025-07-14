@@ -135,6 +135,11 @@ export class PrismaRequestRepository implements RequestRepository {
     dto: RespondRequestDto,
   ): Promise<void> {
     const type = role === 'CITIZEN' ? 'USER_REPLY' : 'RESPONSE';
+    await this.prisma.request.update({
+      where: { id: requestId },
+      data: { status: 'IN_REVIEW' },
+    });
+
     await this.prisma.requestUpdate.create({
       data: {
         requestId,
@@ -177,6 +182,24 @@ export class PrismaRequestRepository implements RequestRepository {
       ...request,
       assignedToId: request.assignedToId ?? undefined,
       currentAreaId: request.currentAreaId ?? undefined,
+    });
+  }
+
+  async completeRequest(requestId: string, userId: string): Promise<void> {
+    // Cambia el estado a COMPLETED
+    await this.prisma.request.update({
+      where: { id: requestId },
+      data: { status: 'COMPLETED' },
+    });
+
+    // Crea un update de tipo CLOSED
+    await this.prisma.requestUpdate.create({
+      data: {
+        requestId,
+        updatedById: userId,
+        type: 'CLOSED',
+        message: 'Solicitud marcada como completada y cerrada.',
+      },
     });
   }
 }

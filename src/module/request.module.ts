@@ -5,20 +5,24 @@ import { CreateRequestUseCase } from 'src/application/use-cases/request/create-r
 import { FindHistoryUseCase } from 'src/application/use-cases/request/find-history.usecase';
 import { RespondRequestUseCase } from 'src/application/use-cases/request/respond-request.usecase';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
+import { OverdueCronService } from 'src/infrastructure/services/overdue-cron.service';
 import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 import { RequestController } from 'src/interfaces/controllers/request.controller';
 
 @Module({
   controllers: [RequestController],
   providers: [
+    OverdueCronService,
     CreateRequestUseCase,
     AssignAreaUseCase,
     RespondRequestUseCase,
     FindHistoryUseCase,
     RequestsGateway,
+    PrismaRequestRepository,
     { provide: 'RequestRepository', useClass: PrismaRequestRepository },
   ],
   exports: [
+    PrismaRequestRepository,
     { provide: 'RequestRepository', useClass: PrismaRequestRepository },
   ],
 })

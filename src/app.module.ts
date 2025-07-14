@@ -9,9 +9,11 @@ import { AreaModule } from './module/area.module';
 import { ProcedureModule } from './module/procedure.module';
 import { RequestModule } from './module/request.module';
 import { UserModule } from './module/user.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PassportModule,
     ConfigModule.forRoot({
       isGlobal: true,

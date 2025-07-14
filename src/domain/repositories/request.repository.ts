@@ -23,5 +23,6 @@ export interface RequestRepository {
     dto: RespondRequestDto,
   ): Promise<void>;
   findById(id: string): Promise<RequestEntity>;
+  completeRequest(requestId: string, userId: string): Promise<void>;
   findHistory(id: string, readerUserId?: string): Promise<any[]>;
 }

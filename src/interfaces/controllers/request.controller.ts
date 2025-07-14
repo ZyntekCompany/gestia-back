@@ -28,12 +28,14 @@ import type { InputJsonValue } from '@prisma/client/runtime/library';
 import { JwtPayload } from 'src/types/express';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 
 @ApiTags('requests')
 @Controller('requests')
 export class RequestController {
   constructor(
     private readonly assignAreaUC: AssignAreaUseCase,
+    private readonly prismaRequestRepository: PrismaRequestRepository,
     private readonly findHistoryUC: FindHistoryUseCase,
     private readonly s3Service: S3Service,
     private readonly prisma: PrismaService,
@@ -308,6 +310,96 @@ export class RequestController {
         counts.find((c) => c.status === status)?._count ?? 0,
       ]),
     );
+    return result;
+  }
+
+  @Patch(':id/complete')
+  @UseGuards(JwtAuthGuard)
+  async completeRequest(@Param('id') id: string, @Req() req: Request) {
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+    if (!userId) throw new BadRequestException('Usuario no autenticado');
+    await this.prismaRequestRepository.completeRequest(id, userId);
+    return { success: true };
+  }
+
+  @Get('my-requests')
+  @UseGuards(JwtAuthGuard)
+  async getMyRequests(
+    @Req() req: Request,
+    @Query('status') status?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const userRole = (req.user as JwtPayload | undefined)?.role;
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+
+    if (!userId || userRole !== 'CITIZEN') {
+      throw new BadRequestException('No autorizado');
+    }
+
+    const pageNumber = parseInt(page ?? '1', 10);
+    const limitNumber = parseInt(limit ?? '10', 10);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const where: { citizenId: string; status?: RequestStatus } = {
+      citizenId: userId,
+    };
+    if (status) where.status = status as RequestStatus;
+
+    const [total, requests] = await Promise.all([
+      this.prisma.request.count({ where }),
+      this.prisma.request.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limitNumber,
+        include: {
+          assignedTo: { select: { id: true, fullName: true, email: true } },
+          procedure: { select: { id: true, name: true } },
+          currentArea: { select: { id: true, name: true } },
+          Document: true,
+        },
+      }),
+    ]);
+
+    return {
+      data: requests,
+      total,
+      page: pageNumber,
+      pageCount: Math.ceil(total / limitNumber),
+    };
+  }
+  // === CONTAR SOLICITUDES DEL CIUDADANO POR ESTADO ===
+  @Get('my-requests/count-by-status')
+  @UseGuards(JwtAuthGuard)
+  async getMyRequestCounts(@Req() req: Request) {
+    const userRole = (req.user as JwtPayload | undefined)?.role;
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+
+    const allStatuses: RequestStatus[] = [
+      'PENDING',
+      'IN_REVIEW',
+      'COMPLETED',
+      'OVERDUE',
+    ];
+
+    if (!userId || userRole !== 'CITIZEN') {
+      throw new BadRequestException('No autorizado');
+    }
+
+    const counts = await this.prisma.request.groupBy({
+      by: ['status'],
+      where: { citizenId: userId },
+      _count: true,
+    });
+
+    const result = Object.fromEntries(
+      allStatuses.map((status) => [
+        status,
+        counts.find((c) => c.status === status)?._count ?? 0,
+      ]),
+    );
+
     return result;
   }
 }
