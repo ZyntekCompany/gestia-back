@@ -20,16 +20,18 @@ enum TypeEntity {
 }
 
 model Area {
-  id                String      @id @default(uuid())
+  id                String          @id @default(uuid())
   name              String
   entityId          String
-  entity            Entity      @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  entity            Entity          @relation(fields: [entityId], references: [id], onDelete: Cascade)
   users             User[]
   procedures        Procedure[]
-  lastAssignedIndex Int         @default(0) // ← para la rotación
+  lastAssignedIndex Int             @default(0) // ← para la rotación
   Request           Request[]
   // createdAt         DateTime    @default(now())
   // updatedAt         DateTime    @updatedt
+  fromUpdates       RequestUpdate[] @relation("FromArea")
+  toUpdates         RequestUpdate[] @relation("ToArea")
 }
 
 // schema.prisma
@@ -186,7 +188,9 @@ model RequestUpdate {
   message     String?
   data        Json?
   fromAreaId  String?
+  fromArea    Area?      @relation("FromArea", fields: [fromAreaId], references: [id])
   toAreaId    String?
+  toArea      Area?      @relation("ToArea", fields: [toAreaId], references: [id])
   isRead      Boolean    @default(false)
   fromUserId  String?
   toUserId    String?

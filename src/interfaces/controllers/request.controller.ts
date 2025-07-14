@@ -265,7 +265,7 @@ export class RequestController {
         skip,
         take: limitNumber, // <-- ahora es un número
         include: {
-          citizen: { select: { id: true, fullName: true, email: true } },
+          citizen: true,
           procedure: { select: { id: true, name: true } },
           currentArea: { select: { id: true, name: true } },
           Document: true,
