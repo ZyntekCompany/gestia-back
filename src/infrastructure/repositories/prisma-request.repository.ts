@@ -101,7 +101,7 @@ export class PrismaRequestRepository implements RequestRepository {
       {
         type: 'ORIGINAL',
         id: request.id,
-        subject: request.subject,
+        message: request.subject,
         data: request.content,
         createdAt: request.createdAt,
         createdBy: request.citizen,
@@ -109,7 +109,6 @@ export class PrismaRequestRepository implements RequestRepository {
         currentArea: request.currentArea,
         documents: request.Document,
         status: request.status,
-        // ...otros campos que quieras mostrar
       },
       ...updates,
     ];
