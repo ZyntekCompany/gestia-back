@@ -18,6 +18,7 @@ export class PrismaProcedureRepository implements ProcedureRepository {
         maxResponseDays: procedure.maxResponseDays,
         entityId: procedure.entityId,
         areaId: procedure.areaId ?? undefined,
+        pqrsType: procedure.pqrsType ?? undefined,
       },
     });
 
@@ -28,6 +29,7 @@ export class PrismaProcedureRepository implements ProcedureRepository {
       created.maxResponseDays,
       created.entityId,
       created.areaId,
+      created.pqrsType,
     );
   }
 
@@ -41,6 +43,7 @@ export class PrismaProcedureRepository implements ProcedureRepository {
           found.maxResponseDays,
           found.entityId,
           found.areaId,
+          found.pqrsType,
         )
       : null;
   }
@@ -62,6 +65,7 @@ export class PrismaProcedureRepository implements ProcedureRepository {
       updated.maxResponseDays,
       updated.entityId,
       updated.areaId,
+      updated.pqrsType,
     );
   }
 
@@ -84,6 +88,7 @@ export class PrismaProcedureRepository implements ProcedureRepository {
           p.maxResponseDays,
           p.entityId,
           p.areaId,
+          p.pqrsType,
         ),
     );
   }

@@ -17,6 +17,8 @@ export class CreateProcedureRequestDto {
 
   @ApiPropertyOptional()
   areaId?: string;
+
+  pqrsType?: string;
 }
 
 export class CreateProcedureResponseDto {
@@ -37,6 +39,8 @@ export class CreateProcedureResponseDto {
 
   @ApiPropertyOptional()
   areaId?: string;
+
+  pqrsType?: string;
 }
 
 export class UpdateProcedureRequestDto {
@@ -54,6 +58,8 @@ export class UpdateProcedureRequestDto {
 
   @ApiPropertyOptional()
   areaId?: string;
+
+  pqrsType?: string;
 }
 
 export class DeleteProcedureRequestDto {
@@ -68,4 +74,5 @@ export class ListProcedureByAreaResponseDto {
   maxResponseDays: number;
   entityId: string;
   areaId: string;
+  pqrsType: string;
 }

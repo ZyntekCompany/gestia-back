@@ -8,6 +8,7 @@ export class Procedure {
     public readonly maxResponseDays: number,
     public readonly entityId: string,
     public readonly areaId?: string | null,
+    public readonly pqrsType?: string | null,
   ) {}
 
   static create(
@@ -16,6 +17,7 @@ export class Procedure {
     maxResponseDays: number,
     entityId: string,
     areaId?: string | null,
+    pqrsType?: string | null,
   ): Procedure {
     const id = crypto.randomUUID();
     return new Procedure(
@@ -25,6 +27,7 @@ export class Procedure {
       maxResponseDays,
       entityId,
       areaId,
+      pqrsType,
     );
   }
 }

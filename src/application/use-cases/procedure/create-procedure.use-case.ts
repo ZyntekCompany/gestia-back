@@ -24,6 +24,7 @@ export class CreateProcedureUseCase {
       dto.maxResponseDays,
       dto.entityId,
       dto.areaId ?? null,
+      dto.pqrsType ?? null,
     );
     const created = await this.procedureRepository.createProcedure(procedure);
     return {
@@ -33,6 +34,7 @@ export class CreateProcedureUseCase {
       maxResponseDays: created.maxResponseDays,
       entityId: created.entityId,
       areaId: created.areaId ?? undefined,
+      pqrsType: created.pqrsType ?? undefined,
     };
   }
 }
