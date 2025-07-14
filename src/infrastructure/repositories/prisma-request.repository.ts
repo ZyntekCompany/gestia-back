@@ -98,6 +98,7 @@ export class PrismaRequestRepository implements RequestRepository {
 
     // 3. Devuelve el historial con la info original al inicio
     return [
+      ...updates,
       {
         type: 'ORIGINAL',
         id: request.id,
@@ -110,7 +111,6 @@ export class PrismaRequestRepository implements RequestRepository {
         documents: request.Document,
         status: request.status,
       },
-      ...updates,
     ];
   }
 
