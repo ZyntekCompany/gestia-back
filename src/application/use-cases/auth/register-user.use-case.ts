@@ -73,11 +73,6 @@ export class RegisterUseCase {
           'Se requiere el id de la entidad para este rol',
         );
       }
-      if (areaId) {
-        throw new BadRequestException(
-          'El rol ADMIN no debe tener área asignada al crearse',
-        );
-      }
     } else {
       // Otros roles necesitan entidad y área
       if (!entityId) {

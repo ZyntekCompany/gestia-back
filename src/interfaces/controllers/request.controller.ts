@@ -41,7 +41,6 @@ export class RequestController {
     private readonly prisma: PrismaService,
   ) {}
 
-  // === CREAR SOLICITUD ===
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
@@ -103,6 +102,15 @@ export class RequestController {
       },
     });
 
+    const procedurePQRS = await this.prisma.request.findFirst({
+      where: {
+        id: request.id,
+      },
+      include: {
+        procedure: true,
+      },
+    });
+
     await this.prisma.area.update({
       where: { id: area?.id },
       data: { lastAssignedIndex: nextIndex + 1 },
@@ -135,7 +143,7 @@ export class RequestController {
       }
     }
 
-    return { request, documents };
+    return { procedurePQRS, request, documents };
   }
 
   // === DERIVAR/ASIGNAR ÁREA ===
@@ -337,7 +345,7 @@ export class RequestController {
     const userRole = (req.user as JwtPayload | undefined)?.role;
     const userId = (req.user as JwtPayload | undefined)?.sub;
 
-    if (!userId || userRole !== 'CITIZEN') {
+    if (!userId) {
       throw new BadRequestException('No autorizado');
     }
 
@@ -377,7 +385,6 @@ export class RequestController {
   @Get('my-requests/count-by-status')
   @UseGuards(JwtAuthGuard)
   async getMyRequestCounts(@Req() req: Request) {
-    const userRole = (req.user as JwtPayload | undefined)?.role;
     const userId = (req.user as JwtPayload | undefined)?.sub;
 
     const allStatuses: RequestStatus[] = [
@@ -387,7 +394,7 @@ export class RequestController {
       'OVERDUE',
     ];
 
-    if (!userId || userRole !== 'CITIZEN') {
+    if (!userId ) {
       throw new BadRequestException('No autorizado');
     }
 

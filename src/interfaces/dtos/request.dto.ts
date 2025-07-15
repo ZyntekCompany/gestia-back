@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/client';
 export class CreateRequestDto {
   @ApiProperty({ example: 'Solicitud de información' })
   subject: string;
+  
 
   @ApiProperty({ example: { texto: 'Contenido en rich-text' }, type: Object })
   content: Prisma.InputJsonValue;
