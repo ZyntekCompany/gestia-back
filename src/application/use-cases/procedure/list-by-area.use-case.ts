@@ -12,4 +12,8 @@ export class ListProcedureByAreaUseCase {
   async execute(areaId: string): Promise<Procedure[]> {
     return this.procedureRepo.findByAreaId(areaId);
   }
+
+  async executedEntityID(id: string): Promise<Procedure[]> {
+    return this.procedureRepo.findByEntityId(id);
+  }
 }

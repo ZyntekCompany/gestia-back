@@ -92,4 +92,22 @@ export class PrismaProcedureRepository implements ProcedureRepository {
         ),
     );
   }
+
+  async findByEntityId(entityId: string): Promise<Procedure[]> {
+    const procedures = await this.prisma.procedure.findMany({
+      where: { entityId },
+    });
+    return procedures.map(
+      (p) =>
+        new Procedure(
+          p.id,
+          p.name,
+          p.description,
+          p.maxResponseDays,
+          p.entityId,
+          p.areaId,
+          p.pqrsType,
+        ),
+    );
+  }
 }

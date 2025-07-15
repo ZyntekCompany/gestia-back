@@ -89,4 +89,15 @@ export class ProcedureController {
   async findByArea(@Param('areaId') areaId: string) {
     return this.listProcedureByAreaUseCase.execute(areaId);
   }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar un procedimiento' })
+  @ApiResponse({
+    status: 200,
+    description: 'Procedimiento eliminado exitosamente',
+  })
+  async GetEntityID(@Param('id') id: string) {
+    return await this.listProcedureByAreaUseCase.executedEntityID(id);
+  }
 }
