@@ -25,7 +25,7 @@ import { UpdateProcedureUseCase } from 'src/application/use-cases/procedure/upda
 import { DeleteProcedureUseCase } from 'src/application/use-cases/procedure/delete-procedure.use-case';
 import { ListProcedureByAreaUseCase } from 'src/application/use-cases/procedure/list-by-area.use-case';
 
-@ApiTags('procedure')
+@ApiTags('Procedure')
 @Controller('procedure')
 export class ProcedureController {
   constructor(

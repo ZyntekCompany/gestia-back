@@ -13,7 +13,7 @@ import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/types/express';
 
-@ApiTags('user')
+@ApiTags('User')
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {

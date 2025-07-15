@@ -1,7 +1,8 @@
-
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { IaUseCase } from '../../application/use-cases/ia/ia.use-case';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('')
 @Controller('ia')
 export class IaController {
   constructor(private readonly iaUseCase: IaUseCase) {}

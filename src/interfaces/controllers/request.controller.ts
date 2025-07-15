@@ -30,7 +30,7 @@ import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 
-@ApiTags('requests')
+@ApiTags('Requests')
 @Controller('requests')
 export class RequestController {
   constructor(

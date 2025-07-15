@@ -31,7 +31,7 @@ import {
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { ListAreasUseCase } from 'src/application/use-cases/area/list-areas.use-case';
 
-@ApiTags('area')
+@ApiTags('Area')
 @Controller('area')
 export class AreaController {
   constructor(

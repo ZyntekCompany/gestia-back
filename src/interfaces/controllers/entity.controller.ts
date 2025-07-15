@@ -35,7 +35,7 @@ import { UpdateEntityUseCase } from 'src/application/use-cases/entity/update-ent
 import { TypeEntity } from '@prisma/client';
 import { ListEntityUseCase } from 'src/application/use-cases/entity/list-entity.use-case';
 
-@ApiTags('entity')
+@ApiTags('Entity')
 @Controller('entity')
 export class Entityontroller {
   constructor(
