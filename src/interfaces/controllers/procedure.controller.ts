@@ -79,7 +79,7 @@ export class ProcedureController {
 
   @Get('by-area/:areaId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener procedimientos por área' })
+  @ApiOperation({ summary: 'Obtener procedimientos por entity' })
   @ApiResponse({
     status: 200,
     description: 'Lista de procedimientos',
