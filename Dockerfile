@@ -2,15 +2,20 @@ FROM node:24-alpine
 
 WORKDIR /app
 
-# Copiar solo lo necesario para instalar dependencias
+# Copiar package.json y lock
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
 
-# Copiar esquema de Prisma primero
+# Instala todas las dependencias (incluye dev)
+RUN npm ci
+
+# Genera el cliente de Prisma
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# Copiar el resto del código (esto ya no invalida el cache anterior)
+# Elimina dependencias de desarrollo después de generar Prisma
+RUN npm prune --omit=dev
+
+# Copiar el resto del código
 COPY . .
 
 # Compilar NestJS
