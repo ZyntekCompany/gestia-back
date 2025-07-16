@@ -42,7 +42,7 @@ export class BrevoEmailService implements EmailService {
     fullName: string,
     token: string,
   ): Promise<void> {
-    const resetUrl = `http://localhost:3000/reestablecer-clave?token=${token}`;
+    const resetUrl = `https://gestia.eduadminsoft.shop/reestablecer-clave?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -187,7 +187,7 @@ export class BrevoEmailService implements EmailService {
     firstName: string,
     token: string,
   ): Promise<void> {
-    const verificationUrl = `http://localhost:3000/verificacion-correo?token=${token}`;
+    const verificationUrl = `https://gestia.eduadminsoft.shop/verificacion-correo?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -455,7 +455,7 @@ export class BrevoEmailService implements EmailService {
   }
 
   async sendResetPassword(email: string, token: string): Promise<void> {
-    const resetUrl = `http://localhost:3000/reestablecer-clave?token=${token}`;
+    const resetUrl = `https://gestia.eduadminsoft.shop/reestablecer-clave?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
