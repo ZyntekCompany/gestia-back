@@ -1,17 +1,22 @@
-FROM node:24-alpine
+GNU nano 7.2                     Dockerfile                               FROM node:24-alpine
 
 # Crear carpeta de trabajo
 WORKDIR /app
 
+# Copiar solo los archivos necesarios para instalar dependencias
+COPY package.json package-lock.json* ./
+
+# Instala dependencias y guarda la capa cacheada
+RUN npm ci --omit=dev
+
 # Copiar package.json e instalar dependencias
-COPY package*.json ./
-RUN npm install
+COPY prisma ./prisma
+RUN npx prisma generate
 
 # Copiar el resto del código
 
 COPY . .
-# Generar el cliente Prisma
-RUN npx prisma generate
+
 
 # Compilar la app (NestJS usa TypeScript)
 RUN npm run build

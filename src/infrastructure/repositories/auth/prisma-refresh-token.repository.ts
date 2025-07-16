@@ -56,11 +56,6 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     const userExists = await this.prisma.user.findUnique({
       where: { id: refreshToken.userId },
     });
-    console.log(
-      '¿User existe justo antes del insert?',
-      !!userExists,
-      refreshToken.userId,
-    );
 
     if (!userExists) {
       throw new Error(
