@@ -1,26 +1,23 @@
 FROM node:24-alpine
 
+# Crear carpeta de trabajo
 WORKDIR /app
 
-# Copiar package.json y lock
-COPY package.json package-lock.json* ./
-
-# Instala todas las dependencias (incluye dev)
-RUN npm ci
-
-# Genera el cliente de Prisma
-COPY prisma ./prisma
-RUN npx prisma generate
-
-# Elimina dependencias de desarrollo después de generar Prisma
-RUN npm prune --omit=dev
+# Copiar package.json e instalar dependencias
+COPY package*.json ./
+RUN npm install
 
 # Copiar el resto del código
-COPY . .
 
-# Compilar NestJS
+COPY . .
+# Generar el cliente Prisma
+RUN npx prisma generate
+
+# Compilar la app (NestJS usa TypeScript)
 RUN npm run build
 
+# Exponer el puerto
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+# Comando para ejecutar la app
+CMD ["node", "dist/main.js"] 
