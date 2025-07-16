@@ -119,6 +119,7 @@ export class PrismaRequestRepository implements RequestRepository {
     if (!request) throw new NotFoundException('Solicitud no encontrada');
     return new RequestEntity({
       ...request,
+      radicado: String(request.radicado ?? ''),
       assignedToId: request.assignedToId ?? undefined,
       currentAreaId: request.currentAreaId ?? undefined,
     });

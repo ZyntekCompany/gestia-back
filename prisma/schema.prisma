@@ -62,7 +62,7 @@ model Procedure {
   requests        Request[]
   area            Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
   areaId          String?
-   pqrsType        String?
+  pqrsType        String?
 }
 
 model User {
@@ -141,6 +141,7 @@ enum UserRole {
 
 model Request {
   id            String          @id @default(uuid())
+  radicado      String?
   subject       String
   content       Json
   status        RequestStatus
@@ -181,6 +182,7 @@ model Document {
 
 model RequestUpdate {
   id          String     @id @default(uuid())
+  radicado    String?
   requestId   String
   request     Request    @relation(fields: [requestId], references: [id], onDelete: Cascade)
   updatedById String

@@ -27,6 +27,7 @@ export class IaUseCase {
     }
     const history = await this.findHistoryUseCase.execute(id);
     const relevantData = {
+      radicado: String(request.radicado ?? ''),
       subject: request.subject,
       content: request.content,
       status: request.status,
@@ -78,6 +79,10 @@ Recuerda: responde en HTML estructurado, profesional, sin errores de sintaxis ni
       prompt: fullPrompt,
     });
 
-    return response.data;
+    let html = response.data;
+    if (typeof html === 'string') {
+      html = html.replace(/```html|```/g, '').trim();
+    }
+    return html;
   }
 }

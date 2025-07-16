@@ -57,8 +57,39 @@ export class CreateRequesUseCase {
     const { addDays } = await import('date-fns');
     const deadline = addDays(new Date(), procedure.maxResponseDays);
 
+    // Para el radicado de Request
+    const lastRequest = await this.prisma.request.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+    let nextRequestNumber = 1;
+    if (
+      lastRequest &&
+      typeof lastRequest.radicado === 'string' &&
+      /^RAD-\d+$/.test(String(lastRequest.radicado))
+    ) {
+      nextRequestNumber =
+        parseInt(String(lastRequest.radicado).replace('RAD-', ''), 10) + 1;
+    }
+    const radicado = `RAD-${nextRequestNumber.toString().padStart(5, '0')}`;
+
+    // Para el radicado de RequestUpdate
+    const lastUpdate = await this.prisma.requestUpdate.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+    let nextUpdateNumber = 1;
+    if (
+      lastUpdate &&
+      typeof lastUpdate.radicado === 'string' &&
+      /^UPD-\d+$/.test(String(lastUpdate.radicado))
+    ) {
+      nextUpdateNumber =
+        parseInt(String(lastUpdate.radicado).replace('UPD-', ''), 10) + 1;
+    }
+    const radicadoUpdate = `UPD-${nextUpdateNumber.toString().padStart(5, '0')}`;
+
     const request = await this.prisma.request.create({
       data: {
+        radicado: radicado,
         subject: dto.subject,
         content: content,
         status: 'PENDING',
@@ -87,12 +118,13 @@ export class CreateRequesUseCase {
 
     await this.prisma.requestUpdate.create({
       data: {
+        radicado: radicadoUpdate,
         requestId: request.id,
         updatedById: assignedOfficer.id,
         type: 'ASSIGNED',
         toAreaId: procedure.areaId,
         toUserId: assignedOfficer.id,
-        message: 'Solicitud asignada automáticamente.',
+        message: 'Solicitud Asignada al Funcionario.',
       },
     });
 

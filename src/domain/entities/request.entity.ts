@@ -2,6 +2,7 @@ import { RequestStatus, Prisma } from '@prisma/client';
 
 export class RequestEntity {
   id: string;
+  radicado: string;
   subject: string;
   content: Prisma.JsonValue | undefined;
   status: RequestStatus;

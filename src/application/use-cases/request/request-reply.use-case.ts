@@ -53,8 +53,24 @@ export class RequesReplyUseCase {
       });
     }
 
+    // Generar radicado para requestUpdate
+    const lastUpdate = await this.prisma.requestUpdate.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+    let nextUpdateNumber = 1;
+    if (
+      lastUpdate &&
+      typeof lastUpdate.radicado === 'string' &&
+      /^UPD-\d+$/.test(String(lastUpdate.radicado))
+    ) {
+      nextUpdateNumber =
+        parseInt(String(lastUpdate.radicado).replace('UPD-', ''), 10) + 1;
+    }
+    const radicadoUpdate = `UPD-${nextUpdateNumber.toString().padStart(5, '0')}`;
+
     const respuesta = await this.prisma.requestUpdate.create({
       data: {
+        radicado: radicadoUpdate,
         requestId: id,
         updatedById: userId,
         type: isOfficer ? 'RESPONSE' : 'USER_REPLY',
