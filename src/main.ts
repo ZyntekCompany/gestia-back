@@ -20,6 +20,7 @@ async function bootstrap() {
         'http://192.168.56.1:3000',
         'https://www.eduadminsoft.shop',
         'https://eduadminsoft.shop',
+        'https://gestia.eduadminsoft.shop',
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
