@@ -6,10 +6,11 @@ import { FindHistoryUseCase } from 'src/application/use-cases/request/find-histo
 import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { OverdueCronService } from 'src/infrastructure/services/overdue-cron.service';
-import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 import { RequestController } from 'src/interfaces/controllers/request.controller';
+import { GatewaysModule } from './core/request-gateway.module';
 
 @Module({
+  imports: [GatewaysModule],
   controllers: [RequestController],
   providers: [
     OverdueCronService,
@@ -17,8 +18,8 @@ import { RequestController } from 'src/interfaces/controllers/request.controller
     FindHistoryUseCase,
     CreateRequesUseCase,
     RequesReplyUseCase,
-    RequestsGateway,
     PrismaRequestRepository,
+
     { provide: 'RequestRepository', useClass: PrismaRequestRepository },
   ],
   exports: [

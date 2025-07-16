@@ -8,10 +8,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RequestRepository } from 'src/domain/repositories/request.repository';
 import { AssignAreaDto } from 'src/interfaces/dtos/request.dto';
 import { RequestEntity } from 'src/domain/entities/request.entity';
+import { RequestsGateway } from '../services/webSocket-gateway.service';
 
 @Injectable()
 export class PrismaRequestRepository implements RequestRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gateway: RequestsGateway,
+  ) {}
 
   async assignArea(
     requestId: string,
@@ -140,6 +144,11 @@ export class PrismaRequestRepository implements RequestRepository {
         type: 'CLOSED',
         message: 'Solicitud marcada como completada y cerrada.',
       },
+    });
+
+    this.gateway.emitRequestUpdate(requestId, {
+      status: 'COMPLETED',
+      message: 'Solicitud completada por el funcionario',
     });
   }
 }

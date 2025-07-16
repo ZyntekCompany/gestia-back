@@ -14,9 +14,9 @@ datasource db {
 }
 
 enum TypeEntity {
-  Instutucion
+  // Instutucion
   Alcaldias
-  Policias
+  // Policias
 }
 
 model Area {

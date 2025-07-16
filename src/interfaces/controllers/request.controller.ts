@@ -193,7 +193,6 @@ export class RequestController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const userRole = (req.user as JwtPayload | undefined)?.role;
     const userId = (req.user as JwtPayload | undefined)?.sub;
 
     if (!userId) {

@@ -3,6 +3,7 @@ import { InputJsonValue } from '@prisma/client/runtime/library';
 import { Request } from 'express';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { S3Service } from 'src/infrastructure/services/s3/s3.service';
+import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 import { RespondRequestDto } from 'src/interfaces/dtos/request.dto';
 import { JwtPayload } from 'src/types/express';
 
@@ -11,6 +12,7 @@ export class RequesReplyUseCase {
   constructor(
     private readonly s3Service: S3Service,
     private readonly prisma: PrismaService,
+    private readonly gateway: RequestsGateway,
   ) {}
 
   async create(
@@ -95,6 +97,13 @@ export class RequesReplyUseCase {
         documents.push(doc);
       }
     }
+
+    this.gateway.emitRequestUpdate(id, {
+      status: isOfficer ? 'IN_REVIEW' : undefined,
+      message: dto.message,
+      from: userId,
+    });
+
     return { success: true, documents };
   }
 }

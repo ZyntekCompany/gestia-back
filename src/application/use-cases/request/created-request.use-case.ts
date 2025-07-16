@@ -3,6 +3,7 @@ import { InputJsonValue } from '@prisma/client/runtime/library';
 import { Request } from 'express';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { S3Service } from 'src/infrastructure/services/s3/s3.service';
+import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 import { CreateRequestDto } from 'src/interfaces/dtos/request.dto';
 import { JwtPayload } from 'src/types/express';
 
@@ -11,6 +12,7 @@ export class CreateRequesUseCase {
   constructor(
     private readonly s3Service: S3Service,
     private readonly prisma: PrismaService,
+    private readonly gateway: RequestsGateway,
   ) {}
 
   async create(
@@ -143,6 +145,8 @@ export class CreateRequesUseCase {
         documents.push(doc);
       }
     }
+
+    this.gateway.emitNewRequest(request.entityId, request);
 
     return { procedurePQRS, request, documents };
   }
