@@ -22,22 +22,23 @@ import {
 } from '../dtos/request.dto';
 import { AssignAreaUseCase } from 'src/application/use-cases/request/assign-area.use-case';
 import { FindHistoryUseCase } from 'src/application/use-cases/request/find-history.usecase';
-import { S3Service } from 'src/infrastructure/services/s3/s3.service';
 import { RequestStatus } from '@prisma/client';
-import type { InputJsonValue } from '@prisma/client/runtime/library';
 import { JwtPayload } from 'src/types/express';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
+import { CreateRequesUseCase } from 'src/application/use-cases/request/created-request.use-case';
+import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
 
 @ApiTags('Requests')
 @Controller('requests')
 export class RequestController {
   constructor(
     private readonly assignAreaUC: AssignAreaUseCase,
+    private readonly createRequesUseCase: CreateRequesUseCase,
+    private readonly requesReplyUseCase: RequesReplyUseCase,
     private readonly prismaRequestRepository: PrismaRequestRepository,
     private readonly findHistoryUC: FindHistoryUseCase,
-    private readonly s3Service: S3Service,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -49,101 +50,7 @@ export class RequestController {
     @UploadedFiles() files: Express.Multer.File[],
     @Req() req: Request,
   ) {
-    // Parsear content si viene como string
-    let content = dto.content;
-    if (typeof content === 'string') {
-      try {
-        content = JSON.parse(content) as unknown as InputJsonValue;
-      } catch {
-        throw new BadRequestException('El campo content debe ser JSON válido');
-      }
-    }
-
-    const userId = (req.user as JwtPayload | undefined)?.sub;
-    if (!userId) throw new BadRequestException('Usuario no autenticado');
-
-    const procedure = await this.prisma.procedure.findUnique({
-      where: { id: dto.procedureId },
-      include: { area: true, entity: true },
-    });
-    if (!procedure || !procedure.areaId) {
-      throw new BadRequestException('Trámite o área no encontrada');
-    }
-
-    const officers = await this.prisma.user.findMany({
-      where: { areaId: procedure.areaId, role: 'OFFICER', active: true },
-      orderBy: { createdAt: 'asc' },
-    });
-    if (!officers.length)
-      throw new BadRequestException(
-        'No hay funcionarios disponibles en el área',
-      );
-
-    const area = await this.prisma.area.findUnique({
-      where: { id: procedure.areaId },
-    });
-    const nextIndex = (area?.lastAssignedIndex || 0) % officers.length;
-    const assignedOfficer = officers[nextIndex];
-
-    const { addDays } = await import('date-fns');
-    const deadline = addDays(new Date(), procedure.maxResponseDays);
-
-    const request = await this.prisma.request.create({
-      data: {
-        subject: dto.subject,
-        content: content,
-        status: 'PENDING',
-        procedureId: dto.procedureId,
-        citizenId: userId,
-        assignedToId: assignedOfficer.id,
-        entityId: procedure.entityId,
-        currentAreaId: procedure.areaId,
-        deadline,
-      },
-    });
-
-    const procedurePQRS = await this.prisma.request.findFirst({
-      where: {
-        id: request.id,
-      },
-      include: {
-        procedure: true,
-      },
-    });
-
-    await this.prisma.area.update({
-      where: { id: area?.id },
-      data: { lastAssignedIndex: nextIndex + 1 },
-    });
-
-    await this.prisma.requestUpdate.create({
-      data: {
-        requestId: request.id,
-        updatedById: assignedOfficer.id,
-        type: 'ASSIGNED',
-        toAreaId: procedure.areaId,
-        toUserId: assignedOfficer.id,
-        message: 'Solicitud asignada automáticamente.',
-      },
-    });
-
-    // Procesar archivos adjuntos
-    const documents: any[] = [];
-    if (files && files.length) {
-      for (const file of files) {
-        const url = await this.s3Service.uploadFile(file);
-        const doc = await this.prisma.document.create({
-          data: {
-            name: file.originalname,
-            url,
-            requestId: request.id,
-          },
-        });
-        documents.push(doc);
-      }
-    }
-
-    return { procedurePQRS, request, documents };
+    return this.createRequesUseCase.create(dto, req, files);
   }
 
   // === DERIVAR/ASIGNAR ÁREA ===
@@ -170,63 +77,7 @@ export class RequestController {
     @UploadedFiles() files: Express.Multer.File[],
     @Req() req: Request,
   ) {
-    const userId = (req.user as JwtPayload | undefined)?.sub;
-    const userRole = (req.user as JwtPayload | undefined)?.role;
-    if (!userId) throw new BadRequestException('Usuario no autenticado');
-
-    const request = await this.prisma.request.findUnique({
-      where: { id },
-    });
-    if (!request) throw new BadRequestException('Request no encontrada');
-
-    const isOwner = request.citizenId === userId;
-    const isAssignedOfficer = request.assignedToId === userId;
-    const isOfficer =
-      userRole === 'OFFICER' || userRole === 'ADMIN' || userRole === 'SUPER';
-    if (!isOwner && !isAssignedOfficer && !isOfficer) {
-      throw new BadRequestException('No autorizado para responder');
-    }
-
-    let data = dto.data;
-    if (typeof data === 'string') {
-      try {
-        data = JSON.parse(data) as unknown as InputJsonValue;
-      } catch {
-        throw new BadRequestException('El campo data debe ser JSON válido');
-      }
-    }
-    await this.prisma.request.update({
-      where: { id },
-      data: { status: 'IN_REVIEW' },
-    });
-
-    const respuesta = await this.prisma.requestUpdate.create({
-      data: {
-        requestId: id,
-        updatedById: userId,
-        type: isOfficer ? 'RESPONSE' : 'USER_REPLY',
-        message: dto.message,
-        data: data,
-      },
-    });
-
-    // Archivos adjuntos como respuesta
-    const documents: any[] = [];
-    if (files && files.length) {
-      for (const file of files) {
-        const url = await this.s3Service.uploadFile(file);
-        const doc = await this.prisma.document.create({
-          data: {
-            name: file.originalname,
-            url,
-            requestId: id,
-            requestUpdateId: respuesta.id, // <-- ¡Referencia a la respuesta!
-          },
-        });
-        documents.push(doc);
-      }
-    }
-    return { success: true, documents };
+    return this.requesReplyUseCase.create(id, dto, req, files);
   }
 
   // === HISTORIAL DE UNA SOLICITUD ===
@@ -394,7 +245,7 @@ export class RequestController {
       'OVERDUE',
     ];
 
-    if (!userId ) {
+    if (!userId) {
       throw new BadRequestException('No autorizado');
     }
 

@@ -6,6 +6,7 @@ import { DeleteProcedureUseCase } from 'src/application/use-cases/procedure/dele
 import { PrismaProcedureRepository } from 'src/infrastructure/repositories/prisma-procedure.repository';
 import { ProcedureController } from 'src/interfaces/controllers/procedure.controller';
 import { ListProcedureByAreaUseCase } from 'src/application/use-cases/procedure/list-by-area.use-case';
+import { PrismaUserRepository } from 'src/infrastructure/repositories/auth/prisma-user.repository';
 
 @Module({
   controllers: [ProcedureController],
@@ -14,6 +15,8 @@ import { ListProcedureByAreaUseCase } from 'src/application/use-cases/procedure/
     UpdateProcedureUseCase,
     DeleteProcedureUseCase,
     ListProcedureByAreaUseCase,
+    { provide: 'UserRepository', useClass: PrismaUserRepository },
+
     { provide: 'ProcedureRepository', useClass: PrismaProcedureRepository },
   ],
   exports: [

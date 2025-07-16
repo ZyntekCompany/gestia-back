@@ -101,9 +101,8 @@ export class Entityontroller {
   @Get('types')
   @ApiOperation({ summary: 'Listar tipos de entidad' })
   getTypes() {
-    // Así lo usas en el frontend para mostrar los botones
     return {
-      types: Object.values(TypeEntity), // ["Instutucion", "Alcaldias", "Policias"]
+      types: Object.values(TypeEntity),
     };
   }
 

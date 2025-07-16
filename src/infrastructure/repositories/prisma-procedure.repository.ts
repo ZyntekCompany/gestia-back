@@ -1,13 +1,15 @@
-// src/infrastructure/repositories/procedure/prisma-procedure.repository.ts
-
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ProcedureRepository } from 'src/domain/repositories/procedure.repository';
 import { Procedure } from 'src/domain/entities/procedure';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserRepository } from 'src/domain/repositories/user.repository';
 
 @Injectable()
 export class PrismaProcedureRepository implements ProcedureRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('UserRepository') private readonly userRepository: UserRepository,
+  ) {}
 
   async createProcedure(procedure: Procedure): Promise<Procedure> {
     const created = await this.prisma.procedure.create({
@@ -93,9 +95,19 @@ export class PrismaProcedureRepository implements ProcedureRepository {
     );
   }
 
-  async findByEntityId(entityId: string): Promise<Procedure[]> {
+  async findByEntityId(entityId: string, userId: string): Promise<Procedure[]> {
+    const user = await this.userRepository.findById(userId);
+    let excludeAreaId: string | undefined;
+
+    if (user && user.area) {
+      excludeAreaId = user.area.id;
+    }
+
     const procedures = await this.prisma.procedure.findMany({
-      where: { entityId },
+      where: {
+        entityId,
+        ...(excludeAreaId && { areaId: { not: excludeAreaId } }),
+      },
     });
     return procedures.map(
       (p) =>

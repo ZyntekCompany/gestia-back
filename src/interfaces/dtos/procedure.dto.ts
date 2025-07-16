@@ -18,6 +18,7 @@ export class CreateProcedureRequestDto {
   @ApiPropertyOptional()
   areaId?: string;
 
+  @ApiPropertyOptional()
   pqrsType?: string;
 }
 
@@ -40,6 +41,7 @@ export class CreateProcedureResponseDto {
   @ApiPropertyOptional()
   areaId?: string;
 
+  @ApiPropertyOptional()
   pqrsType?: string;
 }
 
@@ -59,6 +61,7 @@ export class UpdateProcedureRequestDto {
   @ApiPropertyOptional()
   areaId?: string;
 
+  @ApiPropertyOptional()
   pqrsType?: string;
 }
 

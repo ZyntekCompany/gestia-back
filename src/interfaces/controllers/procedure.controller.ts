@@ -1,5 +1,3 @@
-// src/interfaces/controllers/procedure.controller.ts
-
 import {
   Body,
   Controller,
@@ -10,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -24,6 +23,8 @@ import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { UpdateProcedureUseCase } from 'src/application/use-cases/procedure/update-procedure.use-case';
 import { DeleteProcedureUseCase } from 'src/application/use-cases/procedure/delete-procedure.use-case';
 import { ListProcedureByAreaUseCase } from 'src/application/use-cases/procedure/list-by-area.use-case';
+import { Request } from 'express';
+import { JwtPayload } from 'src/types/express';
 
 @ApiTags('Procedure')
 @Controller('procedure')
@@ -92,12 +93,14 @@ export class ProcedureController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Eliminar un procedimiento' })
   @ApiResponse({
     status: 200,
     description: 'Procedimiento eliminado exitosamente',
   })
-  async GetEntityID(@Param('id') id: string) {
-    return await this.listProcedureByAreaUseCase.executedEntityID(id);
+  async GetEntityID(@Param('id') id: string, @Req() req: Request) {
+    const user = req.user as JwtPayload;
+    return await this.listProcedureByAreaUseCase.executedEntityID(id, user);
   }
 }
