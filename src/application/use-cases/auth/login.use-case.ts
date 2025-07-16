@@ -53,8 +53,6 @@ export class LoginUseCase {
       );
     }
 
-    console.log('Login con user id:', user.id, user.email);
-
     // Generate tokens
     const payload = {
       sub: user.id,
