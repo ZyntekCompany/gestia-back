@@ -66,15 +66,15 @@ export class AuthController {
   private getCookieConfig(req: Request) {
     const origin = req.headers.origin || '';
     const allowedOrigins = [
-      'https://www.eduadminsoft.shop',
-      'https://eduadminsoft.shop',
+      'https://gestia.com.co',
+      'https://www.gestia.com.co',
     ];
     const isProduction = allowedOrigins.includes(origin);
 
     return {
       secure: true, // Requerido para SameSite=None
       sameSite: 'none' as const, // Requerido para cross-site
-      domain: isProduction ? '.eduadminsoft.shop' : undefined,
+      domain: isProduction ? '.gestia.com.co' : undefined,
     };
   }
 

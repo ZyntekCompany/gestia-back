@@ -62,7 +62,6 @@ model Procedure {
   requests        Request[]
   area            Area?     @relation(fields: [areaId], references: [id], onDelete: Cascade)
   areaId          String?
-  pqrsType        String?
 }
 
 model User {

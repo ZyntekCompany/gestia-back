@@ -33,7 +33,6 @@ export class IaUseCase {
       status: request.status,
       procedure: {
         name: request.procedure.name,
-        pqrsType: request.procedure.pqrsType,
       },
       citizen: {
         fullName: request.citizen.fullName,
@@ -61,7 +60,7 @@ Eres un asistente virtual experto en redacción de documentos formales para aten
   <li><strong>Asunto:</strong> ${relevantData.subject}</li>
   <li><strong>Contenido:</strong> ${JSON.stringify(relevantData.content)}</li>
   <li><strong>Estado:</strong> ${relevantData.status}</li>
-  <li><strong>Procedimiento:</strong> ${relevantData.procedure.name} (PQRS: ${relevantData.procedure.pqrsType})</li>
+  <li><strong>Procedimiento:</strong> ${relevantData.procedure.name}</li>
   <li><strong>Solicitante:</strong> ${relevantData.citizen.fullName} (${relevantData.citizen.email})</li>
   <li><strong>Funcionario asignado:</strong> ${
     relevantData.assignedTo
