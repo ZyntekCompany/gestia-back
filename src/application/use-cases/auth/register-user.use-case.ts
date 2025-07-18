@@ -47,6 +47,9 @@ export class RegisterUseCase {
   ): Promise<CreateUserResponseDto> {
     const { email, role, fullName, areaId, entityId } = request;
 
+    // Convertir el correo a minúsculas
+    const lowerEmail = email.toLowerCase();
+
     // Validar rol
     if (!this.isValidRole(role)) {
       throw new BadRequestException(
@@ -55,7 +58,7 @@ export class RegisterUseCase {
     }
 
     // Validar usuario existente
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this.userRepository.findByEmail(lowerEmail);
     if (existingUser) {
       throw new ConflictException('El correo electrónico ya está en uso');
     }
@@ -102,11 +105,11 @@ export class RegisterUseCase {
     // Crear usuario con contraseña temporal
     const tempPassword = this.generateTempPassword();
     const hashedPassword = await this.passwordService.hash(tempPassword);
-    const user = User.create(email, hashedPassword, fullName, role);
+    const user = User.create(lowerEmail, hashedPassword, fullName, role);
 
     // Generar token para establecer contraseña
     const setupToken = this.passwordService.generateResetToken();
-    const passwordReset = PasswordReset.create(email, setupToken);
+    const passwordReset = PasswordReset.create(lowerEmail, setupToken);
     await this.passwordResetRepository.save(passwordReset);
 
     try {
@@ -118,7 +121,7 @@ export class RegisterUseCase {
       );
 
       // Enviar email de bienvenida con token
-      await this.sendWelcomeEmail(email, fullName, setupToken);
+      await this.sendWelcomeEmail(lowerEmail, fullName, setupToken);
 
       return {
         id: savedUser.id,
@@ -210,7 +213,9 @@ export class RegisterUseCase {
     }
 
     // 3. Validar que el usuario no exista
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const existingUser = await this.userRepository.findByEmail(
+      dto.email.toLowerCase(),
+    );
     if (existingUser) {
       throw new ConflictException('El correo electrónico ya está registrado');
     }
@@ -221,7 +226,7 @@ export class RegisterUseCase {
     // 5. Crear la entidad User (ajusta según tu constructor, aquí ejemplo clásico)
     const user = new User(
       crypto.randomUUID(),
-      dto.email,
+      dto.email.toLowerCase(),
       hashedPassword,
       dto.fullName,
       UserRole.CITIZEN,
@@ -268,7 +273,7 @@ export class RegisterUseCase {
     await this.verifyTokenRepository.save(refreshToken);
 
     await this.emailService.sendEmailVerification(
-      dto.email,
+      dto.email.toLowerCase(),
       dto.fullName,
       verifyTokenValue,
     );

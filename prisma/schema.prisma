@@ -92,6 +92,7 @@ model User {
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   EmailVerification    EmailVerification[]
+  RequestExternal      RequestExternal[]
 }
 
 model EmailVerification {
@@ -161,6 +162,25 @@ model Request {
   RequestUpdate RequestUpdate[]
 }
 
+model RequestExternal {
+  id          String  @id @default(uuid())
+  radicado    String?
+  typeRequest String
+  recipient   String
+  userId      String?
+  mailrecipient   String
+  maxResponseDays Int
+  subject         String
+  content         Json
+  status          RequestStatus
+  entityId        String
+  deadline        DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  Document        Document[]
+  User            User?         @relation(fields: [userId], references: [id])
+}
+
 enum RequestStatus {
   IN_REVIEW
   COMPLETED
@@ -169,14 +189,16 @@ enum RequestStatus {
 }
 
 model Document {
-  id              String         @id @default(uuid())
-  name            String
-  url             String
-  requestId       String
-  requestUpdateId String?
-  request         Request        @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  requestUpdate   RequestUpdate? @relation(fields: [requestUpdateId], references: [id], onDelete: Cascade) // <-- ESTO AGREGA LA RELACIÓN INVERSA
-  uploadedAt      DateTime       @default(now())
+  id                String           @id @default(uuid())
+  name              String
+  url               String
+  requestId         String
+  requestUpdateId   String?
+  request           Request          @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestUpdate     RequestUpdate?   @relation(fields: [requestUpdateId], references: [id], onDelete: Cascade) // <-- ESTO AGREGA LA RELACIÓN INVERSA
+  uploadedAt        DateTime         @default(now())
+  RequestExternal   RequestExternal? @relation(fields: [requestExternalId], references: [id])
+  requestExternalId String?
 }
 
 model RequestUpdate {

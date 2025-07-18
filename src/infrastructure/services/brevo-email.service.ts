@@ -42,7 +42,7 @@ export class BrevoEmailService implements EmailService {
     fullName: string,
     token: string,
   ): Promise<void> {
-    const resetUrl = `https://gestia.eduadminsoft.shop/reestablecer-clave?token=${token}`;
+    const resetUrl = `https://gestia.com.co/reestablecer-clave?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -140,7 +140,7 @@ export class BrevoEmailService implements EmailService {
       `,
     };
 
-    await this.sendEmail(emailData);
+    await this.sendEmailInternal(emailData);
   }
 
   async sendEmailVerification(
@@ -148,7 +148,7 @@ export class BrevoEmailService implements EmailService {
     firstName: string,
     token: string,
   ): Promise<void> {
-    const verificationUrl = `https://gestia.eduadminsoft.shop/verificacion-correo?token=${token}`;
+    const verificationUrl = `https://gestia.com.co/verificacion-correo?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -348,11 +348,11 @@ export class BrevoEmailService implements EmailService {
       `,
     };
 
-    await this.sendEmail(emailData);
+    await this.sendEmailInternal(emailData);
   }
 
   async sendResetPassword(email: string, token: string): Promise<void> {
-    const resetUrl = `https://gestia.eduadminsoft.shop/reestablecer-clave?token=${token}`;
+    const resetUrl = `https://gestia.com.co/reestablecer-clave?token=${token}`;
 
     const emailData: BrevoEmailRequest = {
       sender: {
@@ -366,7 +366,7 @@ export class BrevoEmailService implements EmailService {
       ],
       subject: 'Restablece tu contraseña - Gestia',
       htmlContent: `
-       <!DOCTYPE html>
+       
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -374,9 +374,9 @@ export class BrevoEmailService implements EmailService {
     <title>Restablecer Contraseña - Gestia</title>
     <style>
         body {
-            margin: 0; padding: 0;
+     
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8fafc;
+           
             color: #334155;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -389,32 +389,26 @@ export class BrevoEmailService implements EmailService {
         }
         .email-container {
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+         
         }
         .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           
             padding: 48px 40px 36px 40px;
             text-align: center;
             position: relative;
         }
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
+       
         .logo-container {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 20px;
             margin-bottom: 24px;
-            background-color: rgba(255,255,255,0.95);
             padding: 16px 32px;
             border-radius: 50px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+         
         }
         .logo {
             width: 48px;
@@ -432,7 +426,7 @@ export class BrevoEmailService implements EmailService {
             margin: 0;
         }
         .header-title {
-            color: #ffffff;
+            color: #000000;
             font-size: 28px;
             font-weight: 600;
             margin: 0;
@@ -440,7 +434,8 @@ export class BrevoEmailService implements EmailService {
             text-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
         .email-content {
-            padding: 48px 40px;
+            padding: 48px 60px;
+          
         }
         .greeting {
             font-size: 18px;
@@ -460,7 +455,7 @@ export class BrevoEmailService implements EmailService {
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: #5063F0;
             color: #fff !important;
             text-decoration: none;
             padding: 18px 36px;
@@ -477,20 +472,14 @@ export class BrevoEmailService implements EmailService {
             box-shadow: 0 8px 25px rgba(220,38,38,0.33);
         }
         .security-notice {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: #BCCFF1;
             border-left: 4px solid #f59e0b;
             padding: 24px;
             margin: 32px 0;
             border-radius: 0 12px 12px 0;
             position: relative;
         }
-        .security-notice::before {
-            content: '⚠️';
-            position: absolute;
-            top: 24px;
-            left: 12px;
-            font-size: 20px;
-        }
+        
         .security-title {
             font-size: 16px;
             font-weight: 600;
@@ -524,10 +513,7 @@ export class BrevoEmailService implements EmailService {
             line-height: 1.6;
         }
         .url-box {
-            background-color: #ffffff;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 16px;
+          
             word-break: break-all;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 13px;
@@ -631,6 +617,7 @@ export class BrevoEmailService implements EmailService {
     </div>
 </body>
 </html>
+
  `,
       textContent: `
         Restablece tu Contraseña - Gestia
@@ -650,10 +637,27 @@ export class BrevoEmailService implements EmailService {
       `,
     };
 
-    await this.sendEmail(emailData);
+    await this.sendEmailInternal(emailData);
   }
 
-  private async sendEmail(emailData: BrevoEmailRequest): Promise<void> {
+  async sendEmail(params: {
+    to: { email: string; name?: string }[];
+    subject: string;
+    htmlContent: string;
+  }): Promise<void> {
+    const emailData: BrevoEmailRequest = {
+      sender: {
+        name: this.senderName,
+        email: this.senderEmail,
+      },
+      to: params.to,
+      subject: params.subject,
+      htmlContent: params.htmlContent,
+    };
+    await this.sendEmailInternal(emailData);
+  }
+
+  private async sendEmailInternal(emailData: BrevoEmailRequest): Promise<void> {
     try {
       const response = await fetch(this.apiUrl, {
         method: 'POST',

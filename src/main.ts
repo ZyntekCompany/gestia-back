@@ -20,7 +20,6 @@ async function bootstrap() {
         'http://192.168.56.1:3000',
         'https://www.gestia.com.co',
         'https://gestia.com.co',
-        'https://gestia.eduadminsoft.shop',
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
@@ -48,7 +47,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 3001;
   await app.listen(port);
 
   console.log(`Application is running on: ${await app.getUrl()}`);

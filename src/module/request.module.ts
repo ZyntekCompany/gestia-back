@@ -8,6 +8,7 @@ import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-
 import { OverdueCronService } from 'src/infrastructure/services/overdue-cron.service';
 import { RequestController } from 'src/interfaces/controllers/request.controller';
 import { GatewaysModule } from './core/request-gateway.module';
+import { BrevoEmailService } from 'src/infrastructure/services/brevo-email.service';
 
 @Module({
   imports: [GatewaysModule],
@@ -19,7 +20,10 @@ import { GatewaysModule } from './core/request-gateway.module';
     CreateRequesUseCase,
     RequesReplyUseCase,
     PrismaRequestRepository,
-
+    {
+      provide: 'EmailService',
+      useClass: BrevoEmailService,
+    },
     { provide: 'RequestRepository', useClass: PrismaRequestRepository },
   ],
   exports: [

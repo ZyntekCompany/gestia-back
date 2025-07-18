@@ -27,8 +27,10 @@ export class LoginUseCase {
   ) {}
 
   async execute(request: LoginRequestDto): Promise<LoginResponseDto> {
-    // Find user by email
-    const user = await this.userRepository.findByEmail(request.email);
+    // Convertir el correo a minúsculas antes de buscar
+    const email = request.email.toLowerCase();
+    // Buscar usuario por email en minúsculas
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }

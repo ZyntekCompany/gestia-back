@@ -32,7 +32,9 @@ export class ResetPasswordUseCase {
     }
 
     // Find user
-    const user = await this.userRepository.findByEmail(passwordReset.email);
+    const user = await this.userRepository.findByEmail(
+      passwordReset.email.toLowerCase(),
+    );
     if (!user) {
       throw new Error('User not found');
     }
