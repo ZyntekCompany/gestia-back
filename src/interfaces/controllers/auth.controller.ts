@@ -68,7 +68,7 @@ export class AuthController {
     let domain: string | undefined = undefined;
 
     if (
-      origin.includes('.gestia.com.co') ||
+      origin.includes('gestia.com.co') ||
       origin.includes('www.gestia.com.co')
     ) {
       domain = '.gestia.com.co'; // Solo para prod
