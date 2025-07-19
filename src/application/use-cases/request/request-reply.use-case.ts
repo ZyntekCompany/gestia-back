@@ -113,8 +113,6 @@ export class RequesReplyUseCase {
       include: { citizen: true, entity: true },
     });
     if (originalRequest && originalRequest.citizen && originalRequest.entity) {
-      // Determinar el contenido de la respuesta
-
       // Filtrar documentos por tipo
       const pdfDocs = documents.filter((doc) =>
         doc.name.toLowerCase().endsWith('.pdf'),
@@ -127,34 +125,13 @@ export class RequesReplyUseCase {
           !doc.name.toLowerCase().endsWith('.pdf') &&
           !/\.(png|jpg|jpeg|gif)$/i.test(doc.name),
       );
-      // Formatear el contenido: IA o manual
-      let contentHtml = '';
-      if (hasTexto(dto.data) && dto.data.texto.trim()) {
-        contentHtml = dto.data.texto.trim();
-      } else if (
-        dto.message &&
-        typeof dto.message === 'string' &&
-        dto.message.trim()
-      ) {
-        contentHtml = dto.message.trim();
-      } else {
-        contentHtml = '<i>Sin contenido de mensaje</i>';
-      }
-      // Log para depuración
-      console.log(
-        '[EMAIL GESTIA] Enviando correo a:',
-        originalRequest.citizen.email,
-        'con asunto:',
-        originalRequest.subject,
-        'y mensaje:',
-        contentHtml,
-      );
+      // Obtener el radicado de la respuesta
 
       await this.sendCitizenReplyEmail(
         originalRequest.citizen.email,
         originalRequest.citizen.fullName,
-        originalRequest.subject,
-        contentHtml,
+        respuesta.message!,
+        respuesta.data,
         pdfDocs,
         imageDocs,
         otherDocs,
@@ -170,7 +147,7 @@ export class RequesReplyUseCase {
     toEmail: string,
     fullName: string,
     subject: string,
-    content: string,
+    content: any,
     pdfDocs: { name: string; url: string }[],
     imageDocs: { name: string; url: string }[],
     otherDocs: { name: string; url: string }[],
@@ -244,12 +221,4 @@ export class RequesReplyUseCase {
       htmlContent,
     });
   }
-}
-
-function hasTexto(obj: unknown): obj is { texto: string } {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof (obj as Record<string, unknown>).texto === 'string'
-  );
 }

@@ -64,17 +64,20 @@ export class AuthController {
   ) {}
 
   private getCookieConfig(req: Request) {
-    const origin = req.headers.origin || '';
-    const allowedOrigins = [
-      'https://gestia.com.co',
-      'https://www.gestia.com.co',
-    ];
-    const isProduction = allowedOrigins.includes(origin);
+    const origin = req.headers.origin || req.headers.host || '';
+    let domain: string | undefined = undefined;
+
+    if (
+      origin.includes('.gestia.com.co') ||
+      origin.includes('www.gestia.com.co')
+    ) {
+      domain = '.gestia.com.co'; // Solo para prod
+    }
 
     return {
-      secure: true, // Requerido para SameSite=None
-      sameSite: 'none' as const, // Requerido para cross-site
-      domain: isProduction ? '.gestia.com.co' : undefined,
+      secure: true,
+      sameSite: 'none' as const,
+      domain,
     };
   }
 
@@ -131,7 +134,7 @@ export class AuthController {
       httpOnly: true,
       secure: cookieConfig.secure,
       sameSite: cookieConfig.sameSite,
-      maxAge: 35 * 60 * 1000, // 35 minutos
+      maxAge: 60 * 60 * 1000, // 35 minutos
       path: '/',
       domain: cookieConfig.domain,
     });
@@ -181,7 +184,7 @@ export class AuthController {
       sameSite: cookieConfig.sameSite,
       path: '/',
       domain: cookieConfig.domain,
-      maxAge: 35 * 60 * 1000, // 35 minutos
+      maxAge: 60 * 60 * 1000, // 35 minutos
     });
 
     return result;

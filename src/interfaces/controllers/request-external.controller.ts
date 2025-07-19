@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   Req,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { CreateRequestExternalUseCase } from 'src/application/use-cases/request-external/create-request-external.use-case';
 import { DeleteRequestExternalUseCase } from 'src/application/use-cases/request-external/delete-request-external.use-case';
@@ -20,7 +21,6 @@ import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestStatus } from '@prisma/client';
 import { UpdateStatusRequestExternalUseCase } from 'src/application/use-cases/request-external/update-status-request-external.use-case';
 
 @ApiTags('RequestExternal')
@@ -51,8 +51,19 @@ export class RequestExternalController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Req() req: Request) {
-    return this.findAllRequestExternalUseCase.execute(req);
+  findAll(
+    @Req() req: Request,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('subject') subject?: string,
+    @Query('radicado') radicado?: string,
+  ) {
+    return this.findAllRequestExternalUseCase.execute(req, {
+      page,
+      limit,
+      subject,
+      radicado,
+    });
   }
 
   @Get(':id')
@@ -65,12 +76,9 @@ export class RequestExternalController {
     return this.deleteRequestExternalUseCase.execute(id);
   }
 
-  @Patch(':id/status')
+  @Patch(':id/complete')
   @UseGuards(JwtAuthGuard)
-  async updateStatus(
-    @Param('id') id: string,
-    @Body('status') status: RequestStatus,
-  ) {
-    return this.updateStatusRequestExternalUseCase.execute(id, status);
+  async updateStatus(@Param('id') id: string) {
+    return this.updateStatusRequestExternalUseCase.execute(id);
   }
 }

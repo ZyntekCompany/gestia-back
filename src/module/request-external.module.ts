@@ -7,6 +7,7 @@ import { FindAllRequestExternalUseCase } from 'src/application/use-cases/request
 import { FindOneRequestExternalUseCase } from 'src/application/use-cases/request-external/find-one-request-external.use-case';
 import { DeleteRequestExternalUseCase } from 'src/application/use-cases/request-external/delete-request-external.use-case';
 import { UpdateStatusRequestExternalUseCase } from 'src/application/use-cases/request-external/update-status-request-external.use-case';
+import { BrevoEmailService } from 'src/infrastructure/services/brevo-email.service';
 
 @Module({
   imports: [PrismaModule],
@@ -15,6 +16,10 @@ import { UpdateStatusRequestExternalUseCase } from 'src/application/use-cases/re
     {
       provide: 'RequestExternalRepository',
       useClass: PrismaRequestExternalRepository,
+    },
+    {
+      provide: 'EmailService',
+      useClass: BrevoEmailService,
     },
     CreateRequestExternalUseCase,
     FindAllRequestExternalUseCase,

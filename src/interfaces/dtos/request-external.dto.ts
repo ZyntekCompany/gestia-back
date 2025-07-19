@@ -10,15 +10,11 @@ export class CreateRequestExternalDto {
   @ApiProperty()
   mailrecipient: string;
   @ApiProperty()
-  maxResponseDays: number;
-
+  maxResponseDays: string;
   @ApiProperty({ example: 'Solicitud de información' })
   subject: string;
-
   @ApiProperty({ example: { texto: 'Contenido en rich-text' }, type: Object })
   content: Prisma.InputJsonValue;
-  @ApiProperty()
-  entityId: string;
 }
 
 export class UpdateRequestExternalDto extends PartialType(

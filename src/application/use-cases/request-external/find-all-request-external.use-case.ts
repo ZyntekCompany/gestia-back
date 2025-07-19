@@ -13,22 +13,27 @@ export class FindAllRequestExternalUseCase {
 
   async execute(
     req: Request,
+    query: {
+      page?: string;
+      limit?: string;
+      subject?: string;
+      radicado?: string;
+    },
   ): Promise<{ data: RequestExternalEntity[]; meta: any }> {
     const userId = (req.user as JwtPayload | undefined)?.sub;
     if (!userId) throw new BadRequestException('Usuario no autenticado');
 
     // Leer filtros y paginación de los query params
-    const { page = 1, limit = 10, radicado, subject } = req.query;
-    const pageNumber = Number(page) > 0 ? Number(page) : 1;
-    const pageSize = Number(limit) > 0 ? Number(limit) : 10;
+    const pageNumber = Number(query.page) > 0 ? Number(query.page) : 1;
+    const pageSize = Number(query.limit) > 0 ? Number(query.limit) : 10;
 
     // Pasar los filtros y paginación al repositorio
     const result = await this.requestExternalRepository.findAllWithPagination({
       userId,
       page: pageNumber,
       limit: pageSize,
-      radicado: radicado as string | undefined,
-      subject: subject as string | undefined,
+      radicado: query.radicado,
+      subject: query.subject,
     });
     return result;
   }

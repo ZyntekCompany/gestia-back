@@ -29,6 +29,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { CreateRequesUseCase } from 'src/application/use-cases/request/created-request.use-case';
 import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
+import { Prisma } from '@prisma/client';
 
 @ApiTags('Requests')
 @Controller('requests')
@@ -96,6 +97,8 @@ export class RequestController {
     @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('subject') subject?: string,
+    @Query('radicado') radicado?: string,
   ) {
     const userRole = (req.user as JwtPayload | undefined)?.role;
     const userId = (req.user as JwtPayload | undefined)?.sub;
@@ -111,10 +114,12 @@ export class RequestController {
     const limitNumber = parseInt(limit ?? '10', 10);
     const skip = (pageNumber - 1) * limitNumber;
 
-    const where: { assignedToId: string; status?: RequestStatus } = {
+    const where: Prisma.RequestWhereInput = {
       assignedToId: userId,
     };
     if (status) where.status = status as RequestStatus;
+    if (subject) where.subject = { contains: subject, mode: 'insensitive' };
+    if (radicado) where.radicado = { contains: radicado, mode: 'insensitive' };
 
     const [total, requests] = await Promise.all([
       this.prisma.request.count({ where }),

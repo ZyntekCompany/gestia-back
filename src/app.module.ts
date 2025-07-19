@@ -12,6 +12,7 @@ import { UserModule } from './module/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { IaModule } from './module/ia.module';
 import { RequestExternalModule } from './module/request-external.module';
+import { AnalitysModule } from './module/analitys.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { RequestExternalModule } from './module/request-external.module';
     UserModule,
     IaModule,
     RequestExternalModule,
+    AnalitysModule,
   ],
   controllers: [],
   providers: [],
