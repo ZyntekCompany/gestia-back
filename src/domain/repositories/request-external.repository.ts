@@ -16,5 +16,6 @@ export abstract class RequestExternalRepository {
     limit: number;
     radicado?: string;
     subject?: string;
+    status?: string;
   }): Promise<{ data: RequestExternalEntity[]; meta: any }>;
 }

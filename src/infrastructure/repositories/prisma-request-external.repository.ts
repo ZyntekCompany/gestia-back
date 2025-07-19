@@ -26,14 +26,18 @@ export class PrismaRequestExternalRepository extends RequestExternalRepository {
     limit: number;
     radicado?: string;
     subject?: string;
+    status?: string;
   }): Promise<{ data: RequestExternalEntity[]; meta: any }> {
-    const { userId, page, limit, radicado, subject } = params;
+    const { userId, page, limit, radicado, subject, status } = params;
     const where: Record<string, any> = { userId };
     if (typeof radicado === 'string' && radicado.length > 0) {
       where.radicado = { contains: radicado, mode: 'insensitive' };
     }
     if (typeof subject === 'string' && subject.length > 0) {
       where.subject = { contains: subject, mode: 'insensitive' };
+    }
+    if (typeof status === 'string' && status.length > 0) {
+      where.status = status;
     }
 
     const [total, items] = await Promise.all([

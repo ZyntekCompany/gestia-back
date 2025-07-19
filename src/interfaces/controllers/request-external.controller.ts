@@ -53,16 +53,18 @@ export class RequestExternalController {
   @UseGuards(JwtAuthGuard)
   findAll(
     @Req() req: Request,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
     @Query('subject') subject?: string,
     @Query('radicado') radicado?: string,
+    @Query('status') status?: string,
   ) {
     return this.findAllRequestExternalUseCase.execute(req, {
       page,
       limit,
       subject,
       radicado,
+      status,
     });
   }
 
