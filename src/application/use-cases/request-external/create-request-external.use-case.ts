@@ -82,7 +82,14 @@ export class CreateRequestExternalUseCase {
     if (files && files.length) {
       for (const file of files) {
         const url = await this.s3Service.uploadFile(file);
-        documents.push({ name: file.originalname, url });
+        const doc = await this.prisma.document.create({
+          data: {
+            name: file.originalname,
+            url,
+            requestId: request.id,
+          },
+        });
+        documents.push(doc);
       }
     }
 

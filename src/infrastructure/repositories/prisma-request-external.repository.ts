@@ -29,6 +29,8 @@ export class PrismaRequestExternalRepository extends RequestExternalRepository {
     status?: string;
   }): Promise<{ data: RequestExternalEntity[]; meta: any }> {
     const { userId, page, limit, radicado, subject, status } = params;
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
     const where: Record<string, any> = { userId };
     if (typeof radicado === 'string' && radicado.length > 0) {
       where.radicado = { contains: radicado, mode: 'insensitive' };
@@ -44,19 +46,19 @@ export class PrismaRequestExternalRepository extends RequestExternalRepository {
       this.prisma.requestExternal.count({ where }),
       this.prisma.requestExternal.findMany({
         where,
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: (pageNumber - 1) * limitNumber,
+        take: limitNumber,
         orderBy: { createdAt: 'desc' },
       }),
     ]);
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / limitNumber);
     return {
       data: items.map((req) => new RequestExternalEntity(req)),
       meta: {
         totalItems: total,
         totalPages,
-        page,
-        limit,
+        page: pageNumber,
+        limit: limitNumber,
       },
     };
   }
