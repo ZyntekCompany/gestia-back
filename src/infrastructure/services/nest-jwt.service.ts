@@ -14,7 +14,7 @@ export class NestJsJwtService implements IJwtService {
   generateAccessToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): string {
     return this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN', '15m'),
+      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN', '60m'),
     });
   }
 
