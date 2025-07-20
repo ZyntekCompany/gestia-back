@@ -24,7 +24,7 @@ export class PrismaRequestRepository implements RequestRepository {
   ): Promise<void> {
     // Encuentra funcionarios activos en el área destino
     const officers = await this.prisma.user.findMany({
-      where: { areaId: dto.toAreaId, role: 'OFFICER', active: true },
+      where: { areaId: dto.toAreaId, active: true },
       orderBy: { createdAt: 'asc' },
     });
     if (!officers.length)
