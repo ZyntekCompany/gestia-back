@@ -6,12 +6,24 @@ import { UnifiedRequestsFilterDto } from 'src/interfaces/dtos/request.dto';
 export class FindUnifiedRequestsUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(filters: UnifiedRequestsFilterDto) {
+  async execute(filters: UnifiedRequestsFilterDto, userId: string) {
     const page = filters.page || 1;
     const limit = filters.limit || 10;
 
+    // Obtener la entidad del usuario
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { entityId: true },
+    });
+
+    if (!user?.entityId) {
+      throw new Error('Usuario no tiene entidad asignada');
+    }
+
     // Construir filtros para Request
-    const requestWhere: Record<string, any> = {};
+    const requestWhere: Record<string, any> = {
+      entityId: user.entityId, // Filtrar por entidad del usuario
+    };
     if (filters.radicado) {
       requestWhere.radicado = {
         contains: filters.radicado,
@@ -26,7 +38,9 @@ export class FindUnifiedRequestsUseCase {
     }
 
     // Construir filtros para RequestExternal
-    const requestExternalWhere: Record<string, any> = {};
+    const requestExternalWhere: Record<string, any> = {
+      entityId: user.entityId, // Filtrar por entidad del usuario
+    };
     if (filters.radicado) {
       requestExternalWhere.radicado = {
         contains: filters.radicado,

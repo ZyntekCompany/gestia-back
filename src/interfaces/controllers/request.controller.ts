@@ -140,6 +140,7 @@ export class RequestController {
     },
   })
   async getUnifiedRequests(
+    @Req() req: Request,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('radicado') radicado?: string,
@@ -147,6 +148,11 @@ export class RequestController {
     @Query('status') status?: string,
     @Query('type') type?: 'internal' | 'external',
   ) {
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+    if (!userId) {
+      throw new BadRequestException('Usuario no autenticado');
+    }
+
     const filters: UnifiedRequestsFilterDto = {
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 10,
@@ -156,7 +162,7 @@ export class RequestController {
       type,
     };
 
-    return this.findUnifiedRequestsUseCase.execute(filters);
+    return this.findUnifiedRequestsUseCase.execute(filters, userId);
   }
 
   // === GENERAR REPORTE EXCEL ===
@@ -203,11 +209,17 @@ export class RequestController {
   })
   async generateExcelReport(
     @Res() res: Response,
+    @Req() req: Request,
     @Query('radicado') radicado?: string,
     @Query('subject') subject?: string,
     @Query('status') status?: string,
     @Query('type') type?: 'internal' | 'external',
   ) {
+    const userId = (req.user as JwtPayload | undefined)?.sub;
+    if (!userId) {
+      throw new BadRequestException('Usuario no autenticado');
+    }
+
     const filters: UnifiedRequestsFilterDto = {
       page: 1,
       limit: 10000, // Límite alto para obtener todos los datos
@@ -217,7 +229,10 @@ export class RequestController {
       type,
     };
 
-    const excelBuffer = await this.generateExcelReportUseCase.execute(filters);
+    const excelBuffer = await this.generateExcelReportUseCase.execute(
+      filters,
+      userId,
+    );
 
     // Configurar headers para descarga
     const timestamp = new Date().toISOString().split('T')[0];

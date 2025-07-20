@@ -45,9 +45,23 @@ interface RequestWithRelations {
 export class GenerateExcelReportUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(filters: UnifiedRequestsFilterDto): Promise<Buffer> {
+  async execute(
+    filters: UnifiedRequestsFilterDto,
+    userId: string,
+  ): Promise<Buffer> {
+    // Obtener la entidad del usuario
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { entityId: true },
+    });
+
+    if (!user?.entityId) {
+      throw new Error('Usuario no tiene entidad asignada');
+    }
     // Construir filtros para Request
-    const requestWhere: Record<string, any> = {};
+    const requestWhere: Record<string, any> = {
+      entityId: user.entityId, // Filtrar por entidad del usuario
+    };
     if (filters.radicado) {
       requestWhere.radicado = {
         contains: filters.radicado,
@@ -62,7 +76,9 @@ export class GenerateExcelReportUseCase {
     }
 
     // Construir filtros para RequestExternal
-    const requestExternalWhere: Record<string, any> = {};
+    const requestExternalWhere: Record<string, any> = {
+      entityId: user.entityId, // Filtrar por entidad del usuario
+    };
     if (filters.radicado) {
       requestExternalWhere.radicado = {
         contains: filters.radicado,
