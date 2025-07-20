@@ -5,6 +5,7 @@ import { FindHistoryUseCase } from 'src/application/use-cases/request/find-histo
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { IaController } from 'src/interfaces/controllers/ia.controller';
+import { GeminiService } from 'src/infrastructure/services/gemini.service';
 
 @Module({
   imports: [GatewaysModule],
@@ -14,6 +15,7 @@ import { IaController } from 'src/interfaces/controllers/ia.controller';
     PrismaService,
     FindHistoryUseCase,
     PrismaRequestRepository,
+    GeminiService,
     { provide: 'RequestRepository', useClass: PrismaRequestRepository },
   ],
   exports: [PrismaRequestRepository],

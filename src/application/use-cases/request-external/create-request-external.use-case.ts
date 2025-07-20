@@ -57,7 +57,7 @@ export class CreateRequestExternalUseCase {
       nextRequestNumber =
         parseInt(String(lastRequest.radicado).replace('RAD-', ''), 10) + 1;
     }
-    const radicado = `RAD-${nextRequestNumber.toString().padStart(5, '0')}`;
+    const radicado = `RADEXT-${nextRequestNumber.toString().padStart(5, '0')}`;
 
     // Creamos el objeto plano para Prisma
     const newRequestData = {

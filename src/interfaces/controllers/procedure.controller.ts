@@ -94,7 +94,7 @@ export class ProcedureController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Eliminar un procedimiento' })
+  @ApiOperation({ summary: 'ver procedimiento por id de entidad' })
   @ApiResponse({
     status: 200,
     description: 'Procedimiento eliminado exitosamente',

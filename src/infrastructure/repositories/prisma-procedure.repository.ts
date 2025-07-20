@@ -92,16 +92,57 @@ export class PrismaProcedureRepository implements ProcedureRepository {
 
   async findByEntityId(entityId: string, userId: string): Promise<Procedure[]> {
     const user = await this.userRepository.findById(userId);
-    let excludeAreaId: string | undefined;
 
-    if (user && user.area) {
-      excludeAreaId = user.area.id;
+    if (!user) {
+      return [];
     }
+
+    // Si el usuario tiene un área asignada, traer solo procedimientos de esa área
+    if (user.area) {
+      const procedures = await this.prisma.procedure.findMany({
+        where: {
+          entityId,
+          areaId: user.area.id,
+        },
+      });
+      return procedures.map(
+        (p) =>
+          new Procedure(
+            p.id,
+            p.name,
+            p.description,
+            p.maxResponseDays,
+            p.entityId,
+            p.areaId,
+          ),
+      );
+    }
+
+    // Si el usuario no tiene área asignada, traer procedimientos de áreas que tienen funcionarios
+    const areasWithUsers = await this.prisma.area.findMany({
+      where: {
+        users: {
+          some: {
+            active: true,
+            role: {
+              in: ['OFFICER', 'ADMIN', 'SUPER'],
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const areaIdsWithUsers = areasWithUsers.map((area) => area.id);
 
     const procedures = await this.prisma.procedure.findMany({
       where: {
         entityId,
-        ...(excludeAreaId && { areaId: { not: excludeAreaId } }),
+        areaId: {
+          in: areaIdsWithUsers,
+        },
       },
     });
     return procedures.map(

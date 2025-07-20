@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import axios from 'axios';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import { FindHistoryUseCase } from '../request/find-history.usecase';
+import { GeminiService } from 'src/infrastructure/services/gemini.service';
 
 @Injectable()
 export class IaUseCase {
@@ -9,6 +9,7 @@ export class IaUseCase {
     private readonly prisma: PrismaService,
     @Inject(FindHistoryUseCase)
     private readonly findHistoryUseCase: FindHistoryUseCase,
+    private readonly geminiService: GeminiService,
   ) {}
 
   async generateResponse(id: string, prompt: string): Promise<any> {
@@ -74,14 +75,7 @@ Redacta la respuesta institucional solicitada por el usuario a partir del siguie
 Recuerda: responde en HTML estructurado, profesional, sin errores de sintaxis ni estilo.
 `;
 
-    const response = await axios.post('https://ia.eduadminsoft.shop/IA/text', {
-      prompt: fullPrompt,
-    });
-
-    let html = response.data;
-    if (typeof html === 'string') {
-      html = html.replace(/```html|```/g, '').trim();
-    }
-    return html;
+    const generatedText = await this.geminiService.generateText(fullPrompt);
+    return { text: generatedText };
   }
 }

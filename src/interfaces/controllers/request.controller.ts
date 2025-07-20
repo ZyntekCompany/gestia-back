@@ -19,17 +19,20 @@ import {
   AssignAreaDto,
   CreateRequestDto,
   RespondRequestDto,
+  UnifiedRequestsFilterDto,
 } from '../dtos/request.dto';
 import { AssignAreaUseCase } from 'src/application/use-cases/request/assign-area.use-case';
 import { FindHistoryUseCase } from 'src/application/use-cases/request/find-history.usecase';
 import { RequestStatus } from '@prisma/client';
 import { JwtPayload } from 'src/types/express';
 import { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { CreateRequesUseCase } from 'src/application/use-cases/request/created-request.use-case';
 import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
+import { FindUnifiedRequestsUseCase } from 'src/application/use-cases/request/find-unified-requests.use-case';
 import { Prisma } from '@prisma/client';
+import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 
 @ApiTags('Requests')
 @Controller('requests')
@@ -38,9 +41,11 @@ export class RequestController {
     private readonly assignAreaUC: AssignAreaUseCase,
     private readonly createRequesUseCase: CreateRequesUseCase,
     private readonly requesReplyUseCase: RequesReplyUseCase,
+    private readonly findUnifiedRequestsUseCase: FindUnifiedRequestsUseCase,
     private readonly prismaRequestRepository: PrismaRequestRepository,
     private readonly findHistoryUC: FindHistoryUseCase,
     private readonly prisma: PrismaService,
+    private readonly gateway: RequestsGateway, // 👈 nuevo
   ) {}
 
   @Post()
@@ -52,6 +57,103 @@ export class RequestController {
     @Req() req: Request,
   ) {
     return this.createRequesUseCase.create(dto, req, files);
+  }
+
+  // === BÚSQUEDA UNIFICADA DE SOLICITUDES (INTERNAS Y EXTERNAS) ===
+  @Get('reportes')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Buscar solicitudes unificadas',
+    description:
+      'Obtiene solicitudes internas y externas con filtros y paginación',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Número de página',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Elementos por página',
+  })
+  @ApiQuery({
+    name: 'radicado',
+    required: false,
+    description: 'Filtrar por radicado',
+  })
+  @ApiQuery({
+    name: 'subject',
+    required: false,
+    description: 'Filtrar por asunto',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['PENDING', 'IN_REVIEW', 'COMPLETED', 'OVERDUE'],
+    description: 'Filtrar por estado',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ['internal', 'external'],
+    description: 'Tipo de solicitud',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de solicitudes unificadas',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              radicado: { type: 'string' },
+              subject: { type: 'string' },
+              status: { type: 'string' },
+              type: { type: 'string', enum: ['internal', 'external'] },
+              createdAt: { type: 'string', format: 'date-time' },
+              citizen: { type: 'object' },
+              assignedTo: { type: 'object' },
+              procedure: { type: 'object' },
+              entity: { type: 'object' },
+              currentArea: { type: 'object' },
+              Document: { type: 'array' },
+            },
+          },
+        },
+        total: { type: 'number' },
+        page: { type: 'number' },
+        pageCount: { type: 'number' },
+        limit: { type: 'number' },
+      },
+    },
+  })
+  async getUnifiedRequests(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('radicado') radicado?: string,
+    @Query('subject') subject?: string,
+    @Query('status') status?: string,
+    @Query('type') type?: 'internal' | 'external',
+  ) {
+    const filters: UnifiedRequestsFilterDto = {
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 10,
+      radicado,
+      subject,
+      status: status as RequestStatus,
+      type,
+    };
+
+    return this.findUnifiedRequestsUseCase.execute(filters);
   }
 
   // === DERIVAR/ASIGNAR ÁREA ===
@@ -178,6 +280,12 @@ export class RequestController {
         counts.find((c) => c.status === status)?._count ?? 0,
       ]),
     );
+
+    try {
+      this.gateway.emitRequestUpdate(userId, result);
+    } catch (error) {
+      console.warn('Error al emitir WebSocket:', error);
+    }
     return result;
   }
 
