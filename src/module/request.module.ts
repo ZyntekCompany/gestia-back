@@ -5,6 +5,7 @@ import { CreateRequesUseCase } from 'src/application/use-cases/request/created-r
 import { FindHistoryUseCase } from 'src/application/use-cases/request/find-history.usecase';
 import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
 import { FindUnifiedRequestsUseCase } from 'src/application/use-cases/request/find-unified-requests.use-case';
+import { GenerateExcelReportUseCase } from 'src/application/use-cases/request/generate-excel-report.use-case';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { OverdueCronService } from 'src/infrastructure/services/overdue-cron.service';
 import { RequestController } from 'src/interfaces/controllers/request.controller';
@@ -21,6 +22,7 @@ import { BrevoEmailService } from 'src/infrastructure/services/brevo-email.servi
     CreateRequesUseCase,
     RequesReplyUseCase,
     FindUnifiedRequestsUseCase,
+    GenerateExcelReportUseCase,
     PrismaRequestRepository,
     {
       provide: 'EmailService',

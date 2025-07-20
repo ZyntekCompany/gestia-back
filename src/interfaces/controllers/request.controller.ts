@@ -11,6 +11,7 @@ import {
   Get,
   BadRequestException,
   Query,
+  Res,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt.auth.guard';
@@ -25,12 +26,13 @@ import { AssignAreaUseCase } from 'src/application/use-cases/request/assign-area
 import { FindHistoryUseCase } from 'src/application/use-cases/request/find-history.usecase';
 import { RequestStatus } from '@prisma/client';
 import { JwtPayload } from 'src/types/express';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { PrismaRequestRepository } from 'src/infrastructure/repositories/prisma-request.repository';
 import { CreateRequesUseCase } from 'src/application/use-cases/request/created-request.use-case';
 import { RequesReplyUseCase } from 'src/application/use-cases/request/request-reply.use-case';
 import { FindUnifiedRequestsUseCase } from 'src/application/use-cases/request/find-unified-requests.use-case';
+import { GenerateExcelReportUseCase } from 'src/application/use-cases/request/generate-excel-report.use-case';
 import { Prisma } from '@prisma/client';
 import { RequestsGateway } from 'src/infrastructure/services/webSocket-gateway.service';
 
@@ -42,6 +44,7 @@ export class RequestController {
     private readonly createRequesUseCase: CreateRequesUseCase,
     private readonly requesReplyUseCase: RequesReplyUseCase,
     private readonly findUnifiedRequestsUseCase: FindUnifiedRequestsUseCase,
+    private readonly generateExcelReportUseCase: GenerateExcelReportUseCase,
     private readonly prismaRequestRepository: PrismaRequestRepository,
     private readonly findHistoryUC: FindHistoryUseCase,
     private readonly prisma: PrismaService,
@@ -154,6 +157,80 @@ export class RequestController {
     };
 
     return this.findUnifiedRequestsUseCase.execute(filters);
+  }
+
+  // === GENERAR REPORTE EXCEL ===
+  @Get('reportes/excel')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Generar reporte Excel de solicitudes',
+    description:
+      'Genera un archivo Excel con todas las solicitudes internas y externas según los filtros aplicados',
+  })
+  @ApiQuery({
+    name: 'radicado',
+    required: false,
+    description: 'Filtrar por radicado',
+  })
+  @ApiQuery({
+    name: 'subject',
+    required: false,
+    description: 'Filtrar por asunto',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['PENDING', 'IN_REVIEW', 'COMPLETED', 'OVERDUE'],
+    description: 'Filtrar por estado',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ['internal', 'external'],
+    description: 'Tipo de solicitud',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Archivo Excel generado exitosamente',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async generateExcelReport(
+    @Res() res: Response,
+    @Query('radicado') radicado?: string,
+    @Query('subject') subject?: string,
+    @Query('status') status?: string,
+    @Query('type') type?: 'internal' | 'external',
+  ) {
+    const filters: UnifiedRequestsFilterDto = {
+      page: 1,
+      limit: 10000, // Límite alto para obtener todos los datos
+      radicado,
+      subject,
+      status: status as RequestStatus,
+      type,
+    };
+
+    const excelBuffer = await this.generateExcelReportUseCase.execute(filters);
+
+    // Configurar headers para descarga
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `reporte_solicitudes_${timestamp}.xlsx`;
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': excelBuffer.length,
+    });
+
+    res.send(excelBuffer);
   }
 
   // === DERIVAR/ASIGNAR ÁREA ===
