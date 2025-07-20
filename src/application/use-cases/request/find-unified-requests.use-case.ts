@@ -36,6 +36,34 @@ export class FindUnifiedRequestsUseCase {
     if (filters.status) {
       requestWhere.status = filters.status;
     }
+    // Si no se especifican fechas, usar el mes actual
+    if (!filters.startDate && !filters.endDate) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      );
+
+      requestWhere.createdAt = {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      };
+    } else if (filters.startDate || filters.endDate) {
+      const dateFilter: Record<string, Date> = {};
+      if (filters.startDate) {
+        dateFilter.gte = new Date(filters.startDate);
+      }
+      if (filters.endDate) {
+        dateFilter.lte = new Date(filters.endDate + 'T23:59:59.999Z');
+      }
+      requestWhere.createdAt = dateFilter;
+    }
 
     // Construir filtros para RequestExternal
     const requestExternalWhere: Record<string, any> = {
@@ -55,6 +83,34 @@ export class FindUnifiedRequestsUseCase {
     }
     if (filters.status) {
       requestExternalWhere.status = filters.status;
+    }
+    // Si no se especifican fechas, usar el mes actual
+    if (!filters.startDate && !filters.endDate) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      );
+
+      requestExternalWhere.createdAt = {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      };
+    } else if (filters.startDate || filters.endDate) {
+      const dateFilter: Record<string, Date> = {};
+      if (filters.startDate) {
+        dateFilter.gte = new Date(filters.startDate);
+      }
+      if (filters.endDate) {
+        dateFilter.lte = new Date(filters.endDate + 'T23:59:59.999Z');
+      }
+      requestExternalWhere.createdAt = dateFilter;
     }
 
     let internalRequests: Record<string, any>[] = [];

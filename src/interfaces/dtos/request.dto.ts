@@ -60,6 +60,20 @@ export class UnifiedRequestsFilterDto {
     example: 'internal',
   })
   type?: 'internal' | 'external';
+
+  @ApiProperty({
+    required: false,
+    description: 'Fecha de inicio (YYYY-MM-DD)',
+    example: '2024-01-01',
+  })
+  startDate?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Fecha de fin (YYYY-MM-DD)',
+    example: '2024-12-31',
+  })
+  endDate?: string;
 }
 
 export class UnifiedRequestsResponseDto {

@@ -106,6 +106,16 @@ export class RequestController {
     enum: ['internal', 'external'],
     description: 'Tipo de solicitud',
   })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Fecha de inicio (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'Fecha de fin (YYYY-MM-DD)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista de solicitudes unificadas',
@@ -147,6 +157,8 @@ export class RequestController {
     @Query('subject') subject?: string,
     @Query('status') status?: string,
     @Query('type') type?: 'internal' | 'external',
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
     const userId = (req.user as JwtPayload | undefined)?.sub;
     if (!userId) {
@@ -160,6 +172,8 @@ export class RequestController {
       subject,
       status: status as RequestStatus,
       type,
+      startDate,
+      endDate,
     };
 
     return this.findUnifiedRequestsUseCase.execute(filters, userId);
@@ -195,6 +209,16 @@ export class RequestController {
     enum: ['internal', 'external'],
     description: 'Tipo de solicitud',
   })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Fecha de inicio (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'Fecha de fin (YYYY-MM-DD)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Archivo Excel generado exitosamente',
@@ -214,6 +238,8 @@ export class RequestController {
     @Query('subject') subject?: string,
     @Query('status') status?: string,
     @Query('type') type?: 'internal' | 'external',
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
     const userId = (req.user as JwtPayload | undefined)?.sub;
     if (!userId) {
@@ -227,6 +253,8 @@ export class RequestController {
       subject,
       status: status as RequestStatus,
       type,
+      startDate,
+      endDate,
     };
 
     const excelBuffer = await this.generateExcelReportUseCase.execute(
